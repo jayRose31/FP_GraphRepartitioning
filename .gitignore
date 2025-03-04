@@ -1,0 +1,11 @@
+# Ignore all executables
+*.exe
+*.out
+*.o
+
+graph_test
+graph_repartitioning
+
+# Ignore all test files except for graph_test.cpp
+tests/*
+!tests/graph_test.cpp

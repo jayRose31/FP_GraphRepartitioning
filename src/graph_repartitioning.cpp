@@ -24,6 +24,7 @@ std::vector<long> readEdgeInformationFromFile(std::ifstream& file) {
         iss >> edgeInformation[0] >> edgeInformation[1] >> edgeInformation[2];
     } else {
         std::cerr << "Fehler oder Ende der Datei erreicht." << std::endl;
+        edgeInformation[0] = -1;
     }
     
     return edgeInformation;
@@ -45,9 +46,6 @@ std::vector<long> readNumberNodesAndEdgesFromFile(std::ifstream& file) {
 
     return numberNodesAndEdges;
 }
-
-
-
 
 //TODO: Die genau definition der .seq datein abchecken bevor ich weiter mache.
 int main(int argc, char* argv[]) {
@@ -71,22 +69,56 @@ int main(int argc, char* argv[]) {
 
     std::vector<long> edge;
 
+    std::vector<long> numberNodesAndUpdates = readNumberNodesAndEdgesFromFile(file);
+    std::cout << "Number of Nodes: " << numberNodesAndUpdates[0] << std::endl;
+    std::cout << "Number of Updates: " << numberNodesAndUpdates[1] << std::endl;
 
-    std::vector<long> numberNodesAndEdges = readNumberNodesAndEdgesFromFile(file);
-    std::cout << "Number of Nodes: " << numberNodesAndEdges[0] << std::endl;
-    std::cout << "Number of Edges: " << numberNodesAndEdges[1] << std::endl;
-    for(int i = 0; i < 3; i++) {
+    // Erstelle den Graphen
+    //? Ich glaube ich brauche +1, weil wir bei 1 anfangen zu zählen
+    Graph g(numberNodesAndUpdates[0] + 1);
+
+    int linesRead = 0;
+    for(int i = 0; i < numberNodesAndUpdates[1] ; i++) {
         edge = readEdgeInformationFromFile(file);
-
-        for(long value : edge) {
-            std::cout << value << " ";
+        
+        if(edge[0] == 1) {
+            g.add_edge(edge[1], edge[2]);
+            linesRead++;
+        } else if(edge[0] == 0) {
+            g.remove_edge(edge[1], edge[2]);
+            linesRead++;
         }
-        //leerzeile
-        std::cout << "\n" << std::endl;
     }
 
+    std::cout << "Lines read: " << linesRead << std::endl;
+
+    /*
+    ! Es fällt auf, dass die Zahl in Number of Updates nicht mit der Anzahl der Zeilen in der Datei übereinstimmt.
+    ! Die Anzahl der Updates SOLLTE hier 3394979 sein aber es gibt tatsächlich nur 3330022 Zeilen.:(
+    */
+
+
+
+
+    // Umleiten des Standardausgabestreams in eine Datei
+    std::ofstream outFile("graph_output.txt");
+    if (!outFile) {
+        std::cerr << "Fehler beim Öffnen der Ausgabedatei." << std::endl;
+        return 1;
+    }
+
+    // Speichern des aktuellen Puffer
+    std::streambuf* coutBuf = std::cout.rdbuf();
+    // Umleiten von std::cout zu outFile
+    std::cout.rdbuf(outFile.rdbuf());
+
+    // Graphen ausgeben
+    g.printGraph();
+
+    // Wiederherstellen des Standardausgabestreams
+    std::cout.rdbuf(coutBuf);
+
+    outFile.close();
     file.close();
     return 0;
-
-
 }

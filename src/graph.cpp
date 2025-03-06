@@ -18,8 +18,14 @@ void Graph::remove_edge(long start_node, long destination_node) {
     adjacency_list.at(destination_node).erase(std::remove(adjacency_list.at(destination_node).begin(), adjacency_list.at(destination_node).end(), start_node), adjacency_list.at(destination_node).end());
 }
 
+
+//! Fürs erste: printe nur die Knoten die einen Nachbarn haben
 void Graph::printGraph() {
     for (size_t i = 0; i < adjacency_list.size(); i++) {
+
+        if(adjacency_list.at(i).size() == 0) {
+            continue;
+        }
         std::cout << "Knoten " << i << " ist verbunden mit: ";
         for (int neighbor : adjacency_list.at(i)) {
             std::cout << neighbor << " ";

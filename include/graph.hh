@@ -13,23 +13,8 @@ class Graph{
         
         std::vector<std::vector<long>> adjacency_list;
 
-
-        // wie stelle ich edges dar?
-        // wie stell ich den Graph am besten dar?
-        /*
-        Wir brauchen eine darstellung die sich leicht aktualisieren lässt.
-        Also neue Kanten sollte man schnell einfügen können.
-        Deshalb bietet sich eine Darstellung mit zwei arrays 
-        (adjacency array) NICHT an.
-
-        */
-
-
-        /*
-        Ich brauche hier noch eine Funktion um die Datei einzulesen.
-        Als hilsfunktion. Ich denke der Returntyp muss noch geändert werden
-        Vllt brauchen wir auch noch eine Variable für die Datei.
-        */
+        //TODO: Ich muss die Partitionierungsinformation codieren!
+        //TODO: Hierfür brauche ich einen zusätzliche datentyp
         
 
     public:

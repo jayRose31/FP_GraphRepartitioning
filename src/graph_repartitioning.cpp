@@ -97,6 +97,7 @@ int main(int argc, char* argv[]) {
     ! Die Anzahl der Updates SOLLTE hier 3394979 sein aber es gibt tatsächlich nur 3330022 Zeilen.:(
     */
 
+    //TODO: Das Partitioningtool von Henning einbinden
 
 
 

@@ -4,6 +4,7 @@
 
 Graph::Graph(long node_count) {
     adjacency_list.resize(node_count); // Platz für alle Knoten reservieren
+    edge_count = 0;
 }
 
 // Hier muss ich drauf achten wie genau das Dateiformat die Graphen spezifiziert.
@@ -11,11 +12,13 @@ Graph::Graph(long node_count) {
 void Graph::add_edge(long start_node, long destination_node){
     adjacency_list.at(start_node).push_back(destination_node);
     adjacency_list.at(destination_node).push_back(start_node);
+    edge_count += 1;
 }
 
 void Graph::remove_edge(long start_node, long destination_node) {
     adjacency_list.at(start_node).erase(std::remove(adjacency_list.at(start_node).begin(), adjacency_list.at(start_node).end(), destination_node), adjacency_list.at(start_node).end());
     adjacency_list.at(destination_node).erase(std::remove(adjacency_list.at(destination_node).begin(), adjacency_list.at(destination_node).end(), start_node), adjacency_list.at(destination_node).end());
+    edge_count -= 1;
 }
 
 
@@ -32,6 +35,18 @@ void Graph::printGraph() {
         }
         std::cout << std::endl;
     }
+}
+
+int Graph::getNumberNodes() {
+    return adjacency_list.size();
+}
+
+int Graph::getNumberEdges() {
+    return edge_count;
+}
+
+std::vector<std::vector<long>> Graph::getGraph() {
+    return adjacency_list;
 }
 
 

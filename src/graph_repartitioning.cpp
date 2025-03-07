@@ -4,16 +4,10 @@
 #include <sstream>
 #include <string> 
 #include "../include/graph.hh"
+#include "../include/graph_io.hh"
 
-void readOneLine(std::ifstream& file) {
-    std::string line;
-    if (std::getline(file, line)) { // Liest genau eine Zeile
-        std::cout << line << std::endl; // Zeile ausgeben
-    } else {
-        std::cerr << "Fehler oder Ende der Datei erreicht." << std::endl;
-    }
-}
-
+//! Wichtig hier: Node format umwandeln von 1...n
+//! zu 0...n-1
 std::vector<long> readEdgeInformationFromFile(std::ifstream& file) {
     // enthält 3 Zahlen: erste Zahl ist 0 oder 1, zweite Zahl ist Startknoten, dritte Zahl ist Endknoten
     std::vector<long> edgeInformation(3);
@@ -22,6 +16,9 @@ std::vector<long> readEdgeInformationFromFile(std::ifstream& file) {
     if (std::getline(file, line)) {
         std::istringstream iss(line);
         iss >> edgeInformation[0] >> edgeInformation[1] >> edgeInformation[2];
+
+        edgeInformation[1] -= 1;
+        edgeInformation[2] -= 1;
     } else {
         std::cerr << "Fehler oder Ende der Datei erreicht." << std::endl;
         edgeInformation[0] = -1;
@@ -32,7 +29,6 @@ std::vector<long> readEdgeInformationFromFile(std::ifstream& file) {
 
 // die Funktion benutze ich um die erste zeile aus der Datei zu lesen
 // die erste Zeile enthält die Anzahl der Knoten und Kanten
-//! Check mit Christian / der Doku welcher Wert was ist
 std::vector<long> readNumberNodesAndEdgesFromFile(std::ifstream& file) {
     std::vector<long> numberNodesAndEdges(2);
     char dummy;
@@ -47,7 +43,6 @@ std::vector<long> readNumberNodesAndEdgesFromFile(std::ifstream& file) {
     return numberNodesAndEdges;
 }
 
-//TODO: Die genau definition der .seq datein abchecken bevor ich weiter mache.
 int main(int argc, char* argv[]) {
 
     /*
@@ -74,11 +69,10 @@ int main(int argc, char* argv[]) {
     std::cout << "Number of Updates: " << numberNodesAndUpdates[1] << std::endl;
 
     // Erstelle den Graphen
-    //? Ich glaube ich brauche +1, weil wir bei 1 anfangen zu zählen
-    Graph g(numberNodesAndUpdates[0] + 1);
+    Graph g(numberNodesAndUpdates[0]);
 
     int linesRead = 0;
-    for(int i = 0; i < numberNodesAndUpdates[1] ; i++) {
+    for(int i = 0; i < 3330022 ; i++) {
         edge = readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {
@@ -98,28 +92,18 @@ int main(int argc, char* argv[]) {
     */
 
     //TODO: Das Partitioningtool von Henning einbinden
+    //TODO: am einfachsten schaue ich mir an wie man das mit c++
+    //TODO: so als library / module einbindet ABER EGAL
+    //TODO: Fürs erste schreibe ich meinen Graph in ne Metis file
+    //TODO: und switche dann in sein projekt und lass diese Datei einlesen.
+    //TODO: Einfach nur so zum testen wie das alles funktioniert!
+
+    GraphIo g_io = GraphIo();
+
+    g_io.writeGraphToFileMetis("bigGraph", g);
+
+   
 
 
-
-    // Umleiten des Standardausgabestreams in eine Datei
-    std::ofstream outFile("graph_output.txt");
-    if (!outFile) {
-        std::cerr << "Fehler beim Öffnen der Ausgabedatei." << std::endl;
-        return 1;
-    }
-
-    // Speichern des aktuellen Puffer
-    std::streambuf* coutBuf = std::cout.rdbuf();
-    // Umleiten von std::cout zu outFile
-    std::cout.rdbuf(outFile.rdbuf());
-
-    // Graphen ausgeben
-    g.printGraph();
-
-    // Wiederherstellen des Standardausgabestreams
-    std::cout.rdbuf(coutBuf);
-
-    outFile.close();
-    file.close();
     return 0;
 }

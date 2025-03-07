@@ -16,6 +16,8 @@ So if for example node 1 has neighbors 2, 3 and 4, the line would look like this
 The Graph is undirected and edges will be listed twice.
 
 */
+#ifndef GRAPH_IO_HH
+#define GRAPH_IO_HH
 
 #include "graph.hh"
 #include <sstream>
@@ -29,8 +31,9 @@ class GraphIo {
         GraphIo() {}
 
         // Write Graph to File in METIS Format
-        // receive a Graph, set 
-        void writeGraphToFile(std::string filename, Graph g); 
+        // receive a Graph, write it to file specified by filename
+        // create new if it doesnt exist
+        void writeGraphToFileMetis(std::string filename, Graph g); 
 
         // Read Graph from File in METIS Format
         // Return the Graph you read 
@@ -44,3 +47,5 @@ class GraphIo {
 
 
 };
+
+#endif

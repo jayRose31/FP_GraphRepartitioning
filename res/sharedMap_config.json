@@ -1,0 +1,13 @@
+{
+    "hierarchy": [2, 2],
+    "distance": [1, 10],
+    "l": 2,
+    "imbalance": 0.03,
+    "n_threads": 1,
+    "seed": 0,
+    "strategy": "NB_LAYER",
+    "parallel_alg": "MTKAHYPAR_HIGHEST_QUALITY",
+    "serial_alg": "KAFFPA_STRONG",
+    "verbose_error": true,
+    "verbose_statistics": true
+}

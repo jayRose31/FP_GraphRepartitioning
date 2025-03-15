@@ -27,6 +27,11 @@ class Graph{
 
         //TODO: Ich muss die Partitionierungsinformation codieren!
         //TODO: Hierfür brauche ich einen zusätzliche datentyp
+
+        //? einfach vektor der an jeder Stelle den Index des Clusters speichert- Zbsp partition[0] = 1 
+        //? bedeutet, dass der erste Knoten im Cluster 1 ist.
+        //? std::vector<long> partition;
+        //? Oder gleich int [n] partition; weil Henning das selbe nutzt?
         
 
     public:
@@ -52,6 +57,8 @@ class Graph{
        int getNumberNodes();
        int getNumberEdges();
        std::vector<std::vector<long>> getGraph();
+
+       //TODO: convert to CSR Format function
 
 
 };

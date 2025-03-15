@@ -9,11 +9,16 @@ set(SOURCES src/graph.cpp src/graph_io.cpp)
 
 add_subdirectory(third_party/SharedMap)
 
-# Define the first executable (graph_test)
-add_executable(graph_test tests/graph_test.cpp ${SOURCES})
 
-# Define the second executable (graph_repartitioning)
+add_executable(graph_test tests/graph_test.cpp ${SOURCES})
 add_executable(graph_repartitioning src/graph_repartitioning.cpp ${SOURCES})
+add_executable(sharedMapTest tests/sharedMapTest.cpp)
+
+
 
 target_link_libraries(graph_test sharedmap)
 target_link_libraries(graph_repartitioning sharedmap)
+target_link_libraries(sharedMapTest sharedmap)
+
+target_include_directories(sharedMapTest PRIVATE ${CMAKE_SOURCE_DIR}/third_party/SharedMap/include)
+target_include_directories(graph_repartitioning PRIVATE ${CMAKE_SOURCE_DIR}/third_party/SharedMap/include)

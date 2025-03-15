@@ -6,6 +6,8 @@
 #include "../include/graph.hh"
 #include "../include/graph_io.hh"
 
+#include <libsharedmap.h>
+
 //! Wichtig hier: Node format umwandeln von 1...n
 //! zu 0...n-1
 std::vector<long> readEdgeInformationFromFile(std::ifstream& file) {
@@ -90,18 +92,39 @@ int main(int argc, char* argv[]) {
     ! Es fällt auf, dass die Zahl in Number of Updates nicht mit der Anzahl der Zeilen in der Datei übereinstimmt.
     ! Die Anzahl der Updates SOLLTE hier 3394979 sein aber es gibt tatsächlich nur 3330022 Zeilen.:(
     */
+   
+   /*
+   Fürs erste schreibe ich meinen Graph in ne Metis file
+   und switche dann in sein projekt und lass diese Datei einlesen.
+   Einfach nur so zum testen wie das alles funktioniert!
+   
+   GraphIo g_io = GraphIo();
+   
+   g_io.writeGraphToFileMetis("bigGraph", g);
+   */
+  
+  //TODO: Das Partitioningtool von Henning einbinden
+  //Steps:
+    //1. Graph in CSR Format umwandeln
+    //2. Die anderen Paramter setzen (vielleicht kann ich die durch file einlesen)
 
-    //TODO: Das Partitioningtool von Henning einbinden
-    //TODO: am einfachsten schaue ich mir an wie man das mit c++
-    //TODO: so als library / module einbindet ABER EGAL
-    //TODO: Fürs erste schreibe ich meinen Graph in ne Metis file
-    //TODO: und switche dann in sein projekt und lass diese Datei einlesen.
-    //TODO: Einfach nur so zum testen wie das alles funktioniert!
 
-    GraphIo g_io = GraphIo();
+    int hierarchy[] = {2, 2};
+    int distance[]  = {1, 10};
+    int l           = 2;
 
-    g_io.writeGraphToFileMetis("bigGraph", g);
+    // imbalance 3%, 1 thread, seed 0
+    float imbalance = 0.03;
+    int   n_threads = 1;
+    int   seed      = 0;
 
+    shared_map_strategy_type_t  strategy     = NB_LAYER;                    // distribution strategy Non-Blocking Layer
+    shared_map_algorithm_type_t parallel_alg = MTKAHYPAR_HIGHEST_QUALITY;   // parallel algorithm Mt-KaHyPar Highest Quality
+    shared_map_algorithm_type_t serial_alg   = KAFFPA_STRONG;               // serial algorithm KaFFPa Strong
+
+    // whether to print statistics
+    bool verbose_error      = true;
+    bool verbose_statistics = true;
    
 
 

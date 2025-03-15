@@ -9,3 +9,6 @@ graph_repartitioning
 # Ignore all test files except for graph_test.cpp
 tests/*
 !tests/graph_test.cpp
+
+third_party/SharedMap
+build/

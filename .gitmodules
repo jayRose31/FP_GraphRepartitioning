@@ -1,0 +1,3 @@
+[submodule "third_party/SharedMap"]
+	path = third_party/SharedMap
+	url = https://github.com/HenningWoydt/SharedMap.git

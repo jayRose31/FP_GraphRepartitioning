@@ -12,3 +12,9 @@ tests/*
 
 third_party/SharedMap
 build/
+
+bigGraph
+graph_output.txt
+test4
+testWriteGraph
+TODO.txt

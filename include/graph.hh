@@ -4,6 +4,13 @@
 #include <vector>
 
 
+struct CSR{
+    std::vector<int> adj_ptrs;
+    std::vector<int> adj_weights;
+    std::vector<int> adj;
+};
+
+
 /*
  Ich muss hier beachten das nodes in den vorliegenden Formaten
  von 1 bis n gehen aber meine Datenstruktur natürlicherweise von
@@ -59,6 +66,7 @@ class Graph{
        std::vector<std::vector<long>> getGraph();
 
        //TODO: convert to CSR Format function
+       CSR convertToCSR();
 
 
 };

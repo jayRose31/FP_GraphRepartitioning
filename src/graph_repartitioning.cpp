@@ -175,9 +175,51 @@ int main(int argc, char* argv[]) {
   
   //TODO: Das Partitioningtool von Henning einbinden
   //Steps:
+
+    /*
+    Ich benutze jetzt erstmal einen ganz kleinen Graphen um zu testen ob das alles funktioniert.
+
+    */
+
+    Graph g_test(5);
+    g_test.add_edge(0, 1);
+    g_test.add_edge(0, 2);
+    g_test.add_edge(4, 3);
+    g_test.add_edge(4, 2);
+    g_test.add_edge(1, 4);
+
+    g_test.printGraph();
+
     //1. Graph in CSR Format umwandeln
+
+    CSR csr = g_test.convertToCSR();
+    int n = g_test.getNumberNodes();
     
-    
+    std::vector<int> v_weights_vector(n, 1);
+    int* v_weights = v_weights_vector.data();
+
+    // Print the contents of the CSR representation
+    std::cout << "CSR Representation:" << std::endl;
+
+    std::cout << "Adjacency Pointers (adj_ptrs): ";
+    for (size_t i = 0; i < csr.adj_ptrs.size(); ++i) {
+        std::cout << csr.adj_ptrs[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Adjacency List (adj): ";
+    for (size_t i = 0; i < csr.adj.size(); ++i) {
+        std::cout << csr.adj[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Adjacency Weights (adj_weights): ";
+    for (size_t i = 0; i < csr.adj_weights.size(); ++i) {
+        std::cout << csr.adj_weights[i] << " ";
+    }
+    std::cout << std::endl;
+
+
     //2. Die anderen Paramter setzen 
     //! convert to int* later
     std::vector<int> hierarchy;
@@ -195,7 +237,7 @@ int main(int argc, char* argv[]) {
     bool configSucces = readConfigFileSharedMap("./res/sharedMap_config.json", hierarchy, distance, l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error, verbose_statistics);
 
     // optional. just nice debugging rn
-    if(configSucces) {std::cout << "Hierarchy contents: ";
+    if(configSucces && false) {std::cout << "Hierarchy contents: ";
         for (const auto& level : hierarchy) {
             std::cout << level << " ";
         }
@@ -218,6 +260,14 @@ int main(int argc, char* argv[]) {
     }
 
 
+
+
+    // assert the input (optional)
+    bool assert_passed =  shared_map_hierarchical_multisection_assert_input(n, v_weights, csr.adj_ptrs.data(), csr.adj_weights.data() , csr.adj.data()  , hierarchy.data(), distance.data(), l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error);
+    if (!assert_passed) {
+        std::cout << "Error while asserting the input!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
 
     return 0;

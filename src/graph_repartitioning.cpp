@@ -13,7 +13,7 @@
 int main(int argc, char* argv[]) {
     
     // Datei öffnen
-    std::string filename = "./res/proper_loans.seq";
+    std::string filename = "./res/dynGraphs/proper_loans.seq";
     std::ifstream file(filename); 
     if (!file) {
         std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
     bool verbose_error;
     bool verbose_statistics;
    
-    bool configSucces = fileUtils::readConfigFileSharedMap("./res/sharedMap_config.json", hierarchy, distance, l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error, verbose_statistics);
+    bool configSucces = fileUtils::readConfigFileSharedMap("./res/sharedMapConfigs/sharedMap_config.json", hierarchy, distance, l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error, verbose_statistics);
 
     // optional. just nice debugging rn
     if(configSucces && false) {std::cout << "Hierarchy contents: ";

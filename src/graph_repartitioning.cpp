@@ -127,6 +127,7 @@ int main(int argc, char* argv[]) {
 
     */
 
+    
     std::string filename = "./res/proper_loans.seq";
     std::ifstream file(filename); // Datei im Textmodus öffnen
     if (!file) {
@@ -144,7 +145,7 @@ int main(int argc, char* argv[]) {
     Graph g(numberNodesAndUpdates[0]);
 
     int linesRead = 0;
-    for(int i = 0; i <  50 /*3330022 */ ; i++) {
+    for(int i = 0; i < 5000  /* 3330022 */ ; i++) {
         edge = readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {
@@ -192,32 +193,11 @@ int main(int argc, char* argv[]) {
 
     //1. Graph in CSR Format umwandeln
 
-    CSR csr = g_test.convertToCSR();
-    int n = g_test.getNumberNodes();
+    CSR csr = g.convertToCSR();
+    int n = g.getNumberNodes();
     
     std::vector<int> v_weights_vector(n, 1);
     int* v_weights = v_weights_vector.data();
-
-    // Print the contents of the CSR representation
-    std::cout << "CSR Representation:" << std::endl;
-
-    std::cout << "Adjacency Pointers (adj_ptrs): ";
-    for (size_t i = 0; i < csr.adj_ptrs.size(); ++i) {
-        std::cout << csr.adj_ptrs[i] << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Adjacency List (adj): ";
-    for (size_t i = 0; i < csr.adj.size(); ++i) {
-        std::cout << csr.adj[i] << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Adjacency Weights (adj_weights): ";
-    for (size_t i = 0; i < csr.adj_weights.size(); ++i) {
-        std::cout << csr.adj_weights[i] << " ";
-    }
-    std::cout << std::endl;
 
 
     //2. Die anderen Paramter setzen 
@@ -261,13 +241,32 @@ int main(int argc, char* argv[]) {
 
 
 
-
+    /*
+    Das hier klappt ohne probleme aber gibt riesen output aus.
+    
     // assert the input (optional)
     bool assert_passed =  shared_map_hierarchical_multisection_assert_input(n, v_weights, csr.adj_ptrs.data(), csr.adj_weights.data() , csr.adj.data()  , hierarchy.data(), distance.data(), l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error);
     if (!assert_passed) {
         std::cout << "Error while asserting the input!" << std::endl;
         exit(EXIT_FAILURE);
     }
+    */
+
+    int comm_cost;
+    int partition[n];
+
+
+    // do the actual hierarchical multisection
+    shared_map_hierarchical_multisection(n, v_weights, csr.adj_ptrs.data() ,  csr.adj_weights.data() , csr.adj.data(), hierarchy.data(), distance.data(), l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, comm_cost, partition, verbose_statistics);
+
+    std::cout << "Communication Cost J(C, D, PI): " << comm_cost << std::endl;
+    std::cout << "Partition: ";
+    for (int i = 0; i < 20/*n*/; ++i) { std::cout << partition[i] << " "; }
+    std::cout << std::endl;
+
+    g.setPartition(partition);
+
+
 
 
     return 0;

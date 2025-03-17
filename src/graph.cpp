@@ -74,6 +74,19 @@ void Graph::printGraph() {
     }
 }
 
+std::vector<long> Graph::getPartition() {
+    return partition;
+}
+
+void Graph::setPartition(std::vector<long> partition) {
+    this->partition = partition;
+}
+
+void Graph::setPartition(int* partition) {
+    size_t partition_size = sizeof(partition) / sizeof(partition[0]);
+    this->partition = std::vector<long>(partition, partition + partition_size);
+}
+
 int Graph::getNumberNodes() {
     return adjacency_list.size();
 }

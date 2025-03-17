@@ -31,41 +31,30 @@ class Graph{
         int edge_count;
         
         std::vector<std::vector<long>> adjacency_list;
-
-        //TODO: Ich muss die Partitionierungsinformation codieren!
-        //TODO: Hierfür brauche ich einen zusätzliche datentyp
-
-        //? einfach vektor der an jeder Stelle den Index des Clusters speichert- Zbsp partition[0] = 1 
-        //? bedeutet, dass der erste Knoten im Cluster 1 ist.
-        //? std::vector<long> partition;
-        //? Oder gleich int [n] partition; weil Henning das selbe nutzt?
         
+        std::vector<long> partition;
 
     public:
         //Konstruktor
         Graph(long node_count);
 
-        /*
-        brauche eine Operation "update" oder "extend"
-        um neue Edges hinzuzunehmen und die Partition zu aktualisieren
-        Die arbeitet nur auf den Attributen dieser Klasse, deshalb 
-        kann sie void sein.
-        Ich trenne das erstelmal auf in:
-        1. Den Graph um eine Kante zu erweitern
-        2. Die Partition neu berechnen (kann man aufrufen nachdem man eine 
-        Kante hinzugenommen hat) 
-        */
        void add_edge(long start_node, long destination_node);
+       
+       //? das hier abstract und dann Vererbung um verschiedene implementationen zu haben?
        void repartition();
 
        void remove_edge(long start_node, long destination_node);
        void printGraph();
 
+
+       std::vector<long> getPartition();
+       void setPartition(std::vector<long> partition);
+       void setPartition(int* partition);
+
        int getNumberNodes();
        int getNumberEdges();
        std::vector<std::vector<long>> getGraph();
 
-       //TODO: convert to CSR Format function
        CSR convertToCSR();
 
 

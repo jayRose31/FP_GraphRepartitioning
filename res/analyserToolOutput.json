@@ -1,0 +1,21 @@
+{
+	"n": 15 ,
+	"m": 23 ,
+	"graph_weight": 15 ,
+	"edge_weights": 23 ,
+	"edge_cut": 13 ,
+	"edge_cut_per_layer": [9, 4] ,
+	"weighted_edge_cut": 13 ,
+	"weighted_edge_cut_per_layer": [9, 4] ,
+	"comm_cost": 76 ,
+	"comm_cost_per_layer": [36, 40] ,
+	"max_balance": 1.2 ,
+	"avg_balance": 1 ,
+	"min_balance": 0.8 ,
+	"L_max": 3, 
+	"partition_balance": [1.2, 0.8, 0.8, 1.2, 1.2, 0.8] ,
+	"partition_weights": [3, 2, 2, 3, 3, 2], 
+	"is_balanced_on_epsilon": 0, 
+	"is_balanced_on_L_max": 1, 
+	"processed_in": 0.00014496
+}

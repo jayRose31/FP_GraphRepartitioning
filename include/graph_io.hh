@@ -39,6 +39,10 @@ class GraphIo {
         // Return the Graph you read 
         Graph readGraphFromFile(std::string filename);
 
+        // write Graph partition:
+        void writePartitionToFile(std::string filename, Graph g);
+
+
         /*
         TODO: Ich sollte natürlich irgendwie auch noch die Partition mit verarbeiten die
         TODO: mir sharedMap gibt! Das heißt ich brauche eine Methode um einen GRaphen mit

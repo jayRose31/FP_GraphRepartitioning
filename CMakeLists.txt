@@ -9,6 +9,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 set(SOURCES src/graph.cpp src/graph_io.cpp util/fileUtils.cpp)
 
 add_subdirectory(third_party/SharedMap)
+add_subdirectory(third_party/ProcessMappingAnalyzer)
 
 
 add_executable(graph_test tests/graph_test.cpp ${SOURCES})

@@ -1,3 +1,6 @@
 [submodule "third_party/SharedMap"]
 	path = third_party/SharedMap
 	url = https://github.com/HenningWoydt/SharedMap.git
+[submodule "third_party/ProcessMappingAnalyzer"]
+	path = third_party/ProcessMappingAnalyzer
+	url = https://github.com/HenningWoydt/ProcessMappingAnalyzer.git

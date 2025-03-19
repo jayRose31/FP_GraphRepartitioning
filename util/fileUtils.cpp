@@ -9,10 +9,11 @@ std::vector<long> fileUtils::readEdgeInformationFromFile(std::ifstream& file) {
         std::istringstream iss(line);
         iss >> edgeInformation[0] >> edgeInformation[1] >> edgeInformation[2];
 
+        // Format vom Graphen ändern (von 1 bis n, zu 0 bis n-1)
         edgeInformation[1] -= 1;
         edgeInformation[2] -= 1;
     } else {
-        std::cerr << "Fehler oder Ende der Datei erreicht." << std::endl;
+        // std::cerr << "Fehler oder Ende der Datei erreicht." << std::endl;
         edgeInformation[0] = -1;
     }
     

@@ -16,11 +16,13 @@ add_executable(graph_test tests/graph_test.cpp ${SOURCES})
 add_executable(graph_repartitioning src/graph_repartitioning.cpp ${SOURCES})
 add_executable(sharedMapTest tests/sharedMapTest.cpp)
 add_executable(sharedMapTest1 tests/function_tests/sharedMapTest1.cpp ${SOURCES})
+add_executable(repartitioningWithFileInput src/repartitioningWithFileInput.cpp ${SOURCES})
 
 target_link_libraries(graph_test sharedmap)
 target_link_libraries(graph_repartitioning sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(sharedMapTest sharedmap)
 target_link_libraries(sharedMapTest1 sharedmap nlohmann_json::nlohmann_json)
+target_link_libraries(repartitioningWithFileInput sharedmap nlohmann_json::nlohmann_json)
 
 
 

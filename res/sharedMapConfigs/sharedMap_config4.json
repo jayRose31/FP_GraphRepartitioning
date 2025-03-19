@@ -1,8 +1,8 @@
 {
-    "hierarchy": [3,2,1],
-    "distance": [10, 5, 5],
-    "l": 3,
-    "imbalance": 0.05,
+    "hierarchy": [2,3],
+    "distance": [5, 11111],
+    "l": 2,
+    "imbalance": 0.90,
     "n_threads": 1,
     "seed": 0,
     "strategy": "NB_LAYER",

@@ -32,6 +32,7 @@ public:
 
     static bool readConfigFileSharedMap(const std::string& filename, std::vector<int>& hierarchy, std::vector<int>& distance, int& l, float& imbalance, int& n_threads, int& seed, shared_map_strategy_type_t& strategy, shared_map_algorithm_type_t& parallel_alg, shared_map_algorithm_type_t& serial_alg, bool& verbose_error, bool& verbose_statistics) ;
 
+    static int getNumberPartitions(const std::string& filename) ;
 
 };
 

@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-Wall -g")  # Match Makefile flags
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-set(SOURCES src/graph.cpp src/graph_io.cpp util/fileUtils.cpp)
+set(SOURCES src/graph.cpp src/graph_io.cpp util/fileUtils.cpp src/graphRFS.cpp)
 
 add_subdirectory(third_party/SharedMap)
 add_subdirectory(third_party/ProcessMappingAnalyzer)
@@ -17,13 +17,15 @@ add_executable(graph_repartitioning src/graph_repartitioning.cpp ${SOURCES})
 add_executable(sharedMapTest tests/sharedMapTest.cpp)
 add_executable(sharedMapTest1 tests/function_tests/sharedMapTest1.cpp ${SOURCES})
 add_executable(repartitioningWithFileInput src/repartitioningWithFileInput.cpp ${SOURCES})
+add_executable(graphRFSTest tests/function_tests/graphRFSTest.cpp ${SOURCES})
+
 
 target_link_libraries(graph_test sharedmap)
 target_link_libraries(graph_repartitioning sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(sharedMapTest sharedmap)
 target_link_libraries(sharedMapTest1 sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(repartitioningWithFileInput sharedmap nlohmann_json::nlohmann_json)
-
+target_link_libraries(graphRFSTest sharedmap nlohmann_json::nlohmann_json)
 
 
 

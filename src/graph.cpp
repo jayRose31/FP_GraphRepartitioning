@@ -1,4 +1,6 @@
 #include "../include/graph.hh"
+#include "../third_party/SharedMap/include/libsharedmap.h"
+#include "../include/fileUtils.hh"
 #include <iostream>
 #include <algorithm>
 #include <limits>
@@ -82,6 +84,9 @@ void Graph::setPartition(std::vector<long> partition) {
     this->partition = partition;
 }
 
+void Graph::repartition() {
+}
+
 void Graph::setPartition(int* partition) {
     this->partition = std::vector<long>(partition, partition + this->adjacency_list.size());
 }
@@ -96,6 +101,49 @@ int Graph::getNumberEdges() {
 
 std::vector<std::vector<long>> Graph::getGraph() {
     return adjacency_list;
+}
+
+void Graph::partitionWithSharedMap(std::string configFile){
+    
+    //1. Graph in CSR Format umwandeln
+    CSR csr = this->convertToCSR();
+    int n = this->getNumberNodes();
+    
+    std::vector<int> v_weights_vector(n, 1);
+    int* v_weights = v_weights_vector.data();
+
+    //2. Die anderen Paramter setzen 
+    std::vector<int> hierarchy;
+    std::vector<int> distance;
+    int l;
+    float imbalance;
+    int   n_threads;
+    int   seed;
+    shared_map_strategy_type_t  strategy;                    
+    shared_map_algorithm_type_t parallel_alg ;
+    shared_map_algorithm_type_t serial_alg;
+    bool verbose_error;
+    bool verbose_statistics;
+
+    bool configSucces = fileUtils::readConfigFileSharedMap(configFile, hierarchy, distance, l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error, verbose_statistics);
+
+    if(!configSucces) {
+        std::cerr << "Error reading config file. Exiting." << std::endl;
+        return;
+    }
+
+
+    int comm_cost;
+    int partition[n];
+
+
+    // do the actual hierarchical multisection
+    shared_map_hierarchical_multisection(n, v_weights, csr.adj_ptrs.data() ,  csr.adj_weights.data() , csr.adj.data(), hierarchy.data(), distance.data(), l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, comm_cost, partition, verbose_statistics);
+
+    std::cout << "Comm cost: " << comm_cost << std::endl;
+    std::cout << "finished partitioning" << std::endl;
+    this->setPartition(partition);
+
 }
 
 

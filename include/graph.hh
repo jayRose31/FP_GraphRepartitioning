@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <vector>
+#include <string>
 
 
 struct CSR{
@@ -23,7 +24,7 @@ struct CSR{
  aufpassen, von 1...n umzuwandeln auf 0...n-1
 */
 class Graph{
-    private:
+    protected:
         // nodes
         // edges
         // partition
@@ -40,8 +41,8 @@ class Graph{
 
        void add_edge(long start_node, long destination_node);
        
-       //? das hier abstract und dann Vererbung um verschiedene implementationen zu haben?
-       void repartition();
+       // Hier keine Implementierung, nur in den Kinderklassen
+       virtual void repartition();
 
        void remove_edge(long start_node, long destination_node);
        void printGraph();
@@ -56,6 +57,10 @@ class Graph{
        std::vector<std::vector<long>> getGraph();
 
        CSR convertToCSR();
+
+       // this will set the current partition of the graph
+       // using the shared map algorithm
+       void partitionWithSharedMap(std::string configFile);
 
 
 };

@@ -34,6 +34,26 @@ std::vector<long> fileUtils::readNumberNodesAndEdgesFromFile(std::ifstream& file
     return numberNodesAndEdges;
 }
 
+int fileUtils::getNumberPartitions(const std::string& filename){
+    std::ifstream file(filename); // Datei im Textmodus öffnen
+    if (!file) {
+        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        return false;
+    }
+
+    json j;
+    file >> j;
+    file.close();
+
+    std::vector<int> hierarchy = j["hierarchy"].get<std::vector<int>>();
+    int numPartitions = 1;
+    for (int num : hierarchy) {
+        numPartitions *= num;
+    }
+
+    return numPartitions;
+}
+
 bool fileUtils::readConfigFileSharedMap(const std::string& filename, std::vector<int>& hierarchy, std::vector<int>& distance, int& l, float& imbalance, int& n_threads, int& seed, shared_map_strategy_type_t& strategy, shared_map_algorithm_type_t& parallel_alg, shared_map_algorithm_type_t& serial_alg, bool& verbose_error, bool& verbose_statistics) {
     std::ifstream file(filename); // Datei im Textmodus öffnen
     if (!file) {
@@ -53,6 +73,7 @@ bool fileUtils::readConfigFileSharedMap(const std::string& filename, std::vector
     verbose_error = j["verbose_error"].get<bool>();
     verbose_statistics = j["verbose_statistics"].get<bool>();
 
+    file.close();
 
     // die muss ich anders behandeln:
     // zuerst als String extrahieren und dann zuordnen

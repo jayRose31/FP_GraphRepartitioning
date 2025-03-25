@@ -81,6 +81,7 @@ void graphRFS::repartition() {
     int k = fileUtils::getNumberPartitions(configFile);
     std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
 
+
     // Print the similarity matrix
     std::cout << "Similarity Matrix:" << std::endl;
     for (const auto& row : simMatrix) {
@@ -107,6 +108,34 @@ void graphRFS::repartition() {
         std::cout << "(" << std::get<0>(match) << ", " << std::get<1>(match) << ")" << std::endl;
     }
 
-    // 4. Permutiere die Partition
+
+    //test:
+    /*
+    std::vector<int> implicit_test = std::vector<int>(3);
+    std::vector<std::tuple<int, int>> test = {std::make_tuple(0, 2), std::make_tuple(1, 0), std::make_tuple(2, 1)};
+    for(const auto& match: test) {
+        implicit_test[std::get<1>(match)] = std::get<0>(match);
+    }
     
+    for (const auto& value : implicit_test) {
+        std::cout << value << " ";
+    }
+    */
+
+
+    // 4. Permutiere die Partition
+    std::vector<int> implicit_matching = std::vector<int>(matching.size());
+    for(const auto& match : matching) {
+        implicit_matching[std::get<1>(match)] = std::get<0>(match);
+    }
+    
+    std::vector<long> partition_permuted;
+    for (const auto& value : new_partition) {
+        partition_permuted.push_back(implicit_matching.at(value));
+    }
+
+    // 5. Setze die neue Partition
+    this->setPartition(partition_permuted);
+    std::cout << "Finish repartitioning." << std::endl;
+    return;
 }

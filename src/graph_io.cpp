@@ -6,7 +6,7 @@
 #include <vector>
 
 //TODO: extend to weighted case
-void GraphIo::writeGraphToFileMetis(std::string filename, Graph g) {
+void GraphIo::writeGraphToFileMetis(std::string filename, Graph& g) {
     //1. check if file exists
     // if not create it, else open and clear contents
 
@@ -71,7 +71,7 @@ void GraphIo::writeGraphToFileMetis(std::string filename, Graph g) {
 }
 
 
-void GraphIo::writePartitionToFile(std::string filename, Graph g) {
+void GraphIo::writePartitionToFile(std::string filename, Graph& g) {
     //1. check if file exists
     // if not create it, else open and clear contents
         //1. check if file exists
@@ -117,7 +117,7 @@ void GraphIo::writePartitionToFile(std::string filename, Graph g) {
     // write Header:
     std::vector<long> partition = g.getPartition();
 
-    for (int i = 0; i < partition.size(); i++) {
+    for (size_t i = 0; i < partition.size(); i++) {
         outfile << partition.at(i) << "\n";
     }
     outfile.close();

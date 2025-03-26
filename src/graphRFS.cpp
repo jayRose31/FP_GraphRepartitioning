@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include "../include/graphRFS.hh"
+#include "../include/graph_io.hh"
 #include "../include/fileUtils.hh"
 #include "../third_party/SharedMap/include/libsharedmap.h"
 
@@ -77,7 +78,7 @@ std::vector<std::tuple<int, int>> graphRFS::heuristicAssignment(const std::vecto
 void graphRFS::repartition() {
     
     //TODO eventuell auslagern in die Klasse
-    std::string configFile = "./res/sharedMapConfigs/sharedMap_config5.json";
+    std::string configFile = "./res/sharedMapConfigs/sharedMap_config1.json";
     
     // 1. Berechne neue Partition mit shared map
     
@@ -90,7 +91,8 @@ void graphRFS::repartition() {
     int k = fileUtils::getNumberPartitions(configFile);
     std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
 
-
+    /*
+    
     // Print the similarity matrix
     std::cout << "Similarity Matrix:" << std::endl;
     for (const auto& row : simMatrix) {
@@ -99,23 +101,25 @@ void graphRFS::repartition() {
         }
         std::cout << std::endl;
     }
+    */
 
     
     // 3. Löse assignment problem
     std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
 
 
-
+    /*
     // Order the matching entries by the first value of the tuple
     std::sort(matching.begin(), matching.end(), [](const std::tuple<int, int>& a, const std::tuple<int, int>& b) {
         return std::get<0>(a) < std::get<0>(b);
     });
-
+    
     // Print all matching values
     std::cout << "Matching:" << std::endl;
     for (const auto& match : matching) {
         std::cout << "(" << std::get<0>(match) << ", " << std::get<1>(match) << ")" << std::endl;
     }
+    */
 
 
     //test:
@@ -144,9 +148,19 @@ void graphRFS::repartition() {
     }
 
     // 5. Setze die neue Partition
-    this->setPartition(partition_permuted);
     std::cout << "Finish repartitioning." << std::endl;
+    
+    
+    //! schreibe die partitionen to memory for testing
+    GraphIo io;
+    io.writeGraphToFileMetis("./res/repartitioningTestGraphs/Graph_metis", *this);
+    io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNew", *this);
+    this->setPartition(partition_permuted);
+    io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNewPermuted", *this);
+    
 
+
+    return;
 
     // Print all three partitions
     std::cout << "Old Partition:" << std::endl;

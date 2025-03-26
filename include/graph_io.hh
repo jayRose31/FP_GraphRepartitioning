@@ -33,14 +33,14 @@ class GraphIo {
         // Write Graph to File in METIS Format
         // receive a Graph, write it to file specified by filename
         // create new if it doesnt exist
-        void writeGraphToFileMetis(std::string filename, Graph g); 
+        void writeGraphToFileMetis(std::string filename, Graph& g); 
 
         // Read Graph from File in METIS Format
         // Return the Graph you read 
         Graph readGraphFromFile(std::string filename);
 
         // write Graph partition:
-        void writePartitionToFile(std::string filename, Graph g);
+        void writePartitionToFile(std::string filename, Graph& g);
 
 
         /*

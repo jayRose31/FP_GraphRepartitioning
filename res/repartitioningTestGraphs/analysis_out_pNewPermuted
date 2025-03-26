@@ -1,0 +1,21 @@
+{
+	"n": 89270 ,
+	"m": 2264319 ,
+	"graph_weight": 89270 ,
+	"edge_weights": 2264319 ,
+	"edge_cut": 1198314 ,
+	"edge_cut_per_layer": [234024, 354988, 609302] ,
+	"weighted_edge_cut": 1198314 ,
+	"weighted_edge_cut_per_layer": [234024, 354988, 609302] ,
+	"comm_cost": 44125928 ,
+	"comm_cost_per_layer": [468048, 7099760, 36558120] ,
+	"max_balance": 1.03004 ,
+	"avg_balance": 1 ,
+	"min_balance": 0.970001 ,
+	"L_max": 5747, 
+	"partition_balance": [1.008, 0.971435, 1.03004, 1.03004, 0.990254, 0.990254, 0.990075, 0.990075, 0.990075, 0.990075, 0.990075, 0.990075, 1.02986, 0.970001, 1.02986, 1.00979] ,
+	"partition_weights": [5624, 5420, 5747, 5747, 5525, 5525, 5524, 5524, 5524, 5524, 5524, 5524, 5746, 5412, 5746, 5634], 
+	"is_balanced_on_epsilon": 0, 
+	"is_balanced_on_L_max": 1, 
+	"processed_in": 0.371705
+}

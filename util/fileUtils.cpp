@@ -43,9 +43,9 @@ int fileUtils::getNumberPartitions(const std::string& filename){
 
     json j;
     file >> j;
-    file.close();
-
     std::vector<int> hierarchy = j["hierarchy"].get<std::vector<int>>();
+    file.close();
+    
     int numPartitions = 1;
     for (int num : hierarchy) {
         numPartitions *= num;

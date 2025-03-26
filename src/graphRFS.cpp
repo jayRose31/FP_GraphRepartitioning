@@ -40,14 +40,17 @@ std::vector<std::tuple<int, int>> graphRFS::heuristicAssignment(const std::vecto
 
 
     //2. Gehe durch die Edgelist durch und probiere die Knoten zu matchen
+
     // d.h. ich brauch noch eine DS um zu speichern welche Knoten schon gematched sind
     // und eine für die tatsächlichen assignments
     std::vector<bool> oldPartitionMatched(simMatrix.size(), false);
     std::vector<bool> newPartitionMatched(simMatrix.size(), false);
+
     //! explizite darstellung der assignments als tuple<olPartition, newPartition>
     //TODO: eine implizite Darstellung hinzufügen für speed
     std::vector<std::tuple<int, int>> assignments;
 
+    size_t matchCount = 0;
     for(const auto& edge : edgeList) {
         int oldPartition = std::get<0>(edge);
         int newPartition = std::get<1>(edge);
@@ -56,6 +59,12 @@ std::vector<std::tuple<int, int>> graphRFS::heuristicAssignment(const std::vecto
             assignments.push_back(std::make_tuple(oldPartition, newPartition));
             oldPartitionMatched[oldPartition] = true;
             newPartitionMatched[newPartition] = true;
+            matchCount++;
+        }
+        
+        // quit early 
+        if (matchCount >= simMatrix.size()) {
+            break;
         }
     }
 
@@ -137,6 +146,7 @@ void graphRFS::repartition() {
     // 5. Setze die neue Partition
     this->setPartition(partition_permuted);
     std::cout << "Finish repartitioning." << std::endl;
+
 
     // Print all three partitions
     std::cout << "Old Partition:" << std::endl;

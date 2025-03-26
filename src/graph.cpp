@@ -109,6 +109,7 @@ void Graph::partitionWithSharedMap(std::string configFile){
     CSR csr = this->convertToCSR();
     int n = this->getNumberNodes();
     
+    //! ich setze die Knotengewichte standardmäßig auf 1
     std::vector<int> v_weights_vector(n, 1);
     int* v_weights = v_weights_vector.data();
 

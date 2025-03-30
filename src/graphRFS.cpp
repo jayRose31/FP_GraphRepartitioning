@@ -148,15 +148,13 @@ void graphRFS::repartition() {
     }
 
     // 5. Setze die neue Partition
-    std::cout << "Finish repartitioning." << std::endl;
-    
-    
+        
     //! schreibe die partitionen to memory for testing
-    GraphIo io;
-    io.writeGraphToFileMetis("./res/repartitioningTestGraphs/Graph_metis", *this);
-    io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNew", *this);
+    //GraphIo io;
+    //io.writeGraphToFileMetis("./res/repartitioningTestGraphs/Graph_metis", *this);
+    //io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNew", *this);
     this->setPartition(partition_permuted);
-    io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNewPermuted", *this);
+    //io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNewPermuted", *this);
     
 
 

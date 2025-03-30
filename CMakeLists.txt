@@ -18,6 +18,7 @@ add_executable(sharedMapTest tests/sharedMapTest.cpp)
 add_executable(sharedMapTest1 tests/function_tests/sharedMapTest1.cpp ${SOURCES})
 add_executable(repartitioningWithFileInput src/repartitioningWithFileInput.cpp ${SOURCES})
 add_executable(graphRFSTest tests/function_tests/graphRFSTest.cpp ${SOURCES})
+add_executable(graphRFSExp experiments/graphRFSExperiments/graphRFSExperiments.cpp ${SOURCES})
 
 
 target_link_libraries(graph_test sharedmap)
@@ -26,6 +27,6 @@ target_link_libraries(sharedMapTest sharedmap)
 target_link_libraries(sharedMapTest1 sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(repartitioningWithFileInput sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSTest sharedmap nlohmann_json::nlohmann_json)
-
+target_link_libraries(graphRFSExp sharedmap nlohmann_json::nlohmann_json)
 
 

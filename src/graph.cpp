@@ -103,6 +103,8 @@ std::vector<std::vector<long>> Graph::getGraph() {
     return adjacency_list;
 }
 
+
+//! Das hier sollte nichts auf die console printen
 void Graph::partitionWithSharedMap(std::string configFile){
     
     //1. Graph in CSR Format umwandeln
@@ -130,19 +132,17 @@ void Graph::partitionWithSharedMap(std::string configFile){
 
     if(!configSucces) {
         std::cerr << "Error reading config file. Exiting." << std::endl;
-        return;
+        return ;
     }
 
-
+    
     int comm_cost;
     int partition[n];
 
-
     // do the actual hierarchical multisection
+    //! Das hier gibt so nen riesen output auf der konsole >:((
     shared_map_hierarchical_multisection(n, v_weights, csr.adj_ptrs.data() ,  csr.adj_weights.data() , csr.adj.data(), hierarchy.data(), distance.data(), l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, comm_cost, partition, verbose_statistics);
 
-    std::cout << "Comm cost: " << comm_cost << std::endl;
-    std::cout << "finished partitioning" << std::endl;
     this->setPartition(partition);
 
 }

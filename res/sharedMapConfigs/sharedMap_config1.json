@@ -8,6 +8,6 @@
     "strategy": "NAIVE",
     "parallel_alg": "MTKAHYPAR_DEFAULT",
     "serial_alg": "KAFFPA_FAST",
-    "verbose_error": true,
-    "verbose_statistics": true
+    "verbose_error": false,
+    "verbose_statistics": false
 }

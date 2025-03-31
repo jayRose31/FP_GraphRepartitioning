@@ -3,6 +3,16 @@
 # Setze das Build-Verzeichnis
 BUILD_DIR="build"
 
+# Überprüfe, ob nlohmann_json installiert ist
+echo "Überprüfe, ob nlohmann_json installiert ist..."
+if ! [ -d "/usr/include/nlohmann" ]; then
+    echo "nlohmann_json ist nicht installiert. Installiere es jetzt..."
+    sudo apt-get update
+    sudo apt-get install -y nlohmann-json3-dev
+else
+    echo "nlohmann_json ist bereits installiert."
+fi
+
 # Falls das Verzeichnis noch nicht existiert, erstelle es
 if [ ! -d "$BUILD_DIR" ]; then
     mkdir -p "$BUILD_DIR"

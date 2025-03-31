@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 #include <string> 
+#include <chrono>
+
 #include "../../include/graph.hh"
 #include "../../include/graphRFS.hh"
 #include "../../include/graph_io.hh"
@@ -10,19 +12,35 @@
 
 int main(int argc, char* argv[]) {
     
-    //TODO: read input from cli
-    //1. read graph from file
-    //2. sharedMapConfig
-    //3. Number Updates till repartitioning
 
-    std::string configFile ="./res/sharedMapConfigs/sharedMap_config1.json";
+    //------------------------------- init ------------------------------------------
+
+    // Check if the correct number of arguments is provided
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates>" << std::endl;
+        return 1;
+    }
+
+    // Read arguments from the command line
+    std::string configFile = argv[1];  
+    std::string graphFilename = argv[2];   
+    int numberOfUpdates;              
+
+    // Convert the third argument to an integer
+    try {
+        numberOfUpdates = std::stoi(argv[3]);
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Invalid number for updates: " << argv[3] << std::endl;
+        return 1;
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Number of updates out of range: " << argv[3] << std::endl;
+        return 1;
+    }
 
 
-    // Datei öffnen
-    std::string filename = "./res/dynGraphs/haggle.seq";
-    std::ifstream file(filename); 
+    std::ifstream file(graphFilename); 
     if (!file) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        std::cerr << "Fehler beim Öffnen der Datei: " << graphFilename << std::endl;
         return 1;
     }
 
@@ -32,8 +50,11 @@ int main(int argc, char* argv[]) {
 
     std::vector<long> numberNodesAndUpdates = fileUtils::readNumberNodesAndEdgesFromFile(file);
 
-    // Erstelle den Graphen
+
+
+    // ------------------------------- build graph and partition --------------------------------
     graphRFS g(numberNodesAndUpdates[0]);
+
 
     // Kanten einlesen
     for(int i = 0; i < numberNodesAndUpdates[1] *2/ 3 ; i++) {
@@ -51,7 +72,7 @@ int main(int argc, char* argv[]) {
     
     g.partitionWithSharedMap(configFile);
     
-    for(int i = 0; i < 1000 ; i++) {
+    for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {
@@ -64,15 +85,23 @@ int main(int argc, char* argv[]) {
     }
 
     // Zeit messen
+    auto start = std::chrono::high_resolution_clock::now(); // Uhr starten
+
     g.repartition();
+    
+    auto stop = std::chrono::high_resolution_clock::now(); // Uhr stoppen
+    
+    // Dauer berechnen
+    auto duration_repartitioning = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
 
     // fertig
     file.close();
 
     
+
     // ---------- Schreibe Sachen damit ich in python das Tool von Henning benutzen kann ------------
-    filename = "./experiments/graphRFSExperiments/analyzerTool_temporary.txt";
+    std::string filename = "./experiments/graphRFSExperiments/analyzerTool_temporary.txt";
     std::ofstream analyzer_tool(filename); 
     if (!analyzer_tool) {
         std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
@@ -136,7 +165,7 @@ int main(int argc, char* argv[]) {
 
     analyzer_tool.close();
 
-    // ---------------------------------------- fertig ----------------------------------------------------
+    // ---------------------------------------- pass remaining data to python script--------------------------------------------
 
 
 
@@ -149,15 +178,16 @@ int main(int argc, char* argv[]) {
     }
 
     // Ergebnisse schreiben
-    // 1. Zeit zum repartitionieren
-
-
+    // 1. Zeit zum repartitionieren in sekunden
+    double duration_in_seconds = duration_repartitioning.count() / 1000.0;
+    res_temp << duration_in_seconds << std::endl;
 
 
     
     res_temp.close();
 
 
+    //--------------------------------- ----------------- done ------------------------------------------------------
     
     return 0;
 }

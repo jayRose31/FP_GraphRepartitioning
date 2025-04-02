@@ -84,7 +84,7 @@ void Graph::setPartition(std::vector<long> partition) {
     this->partition = partition;
 }
 
-void Graph::repartition() {
+void Graph::repartition(std::string configFile) {
 }
 
 void Graph::setPartition(int* partition) {

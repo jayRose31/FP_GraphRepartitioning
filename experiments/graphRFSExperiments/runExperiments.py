@@ -46,7 +46,8 @@ def run_single_experiment(args):
     # die file am out_path muss ich noch erstellen.
     with open(out_path, "w"):
         pass
-        
+         
+    
     # Jetzt benutze ich das tool vom Henning. Abfahrt!
     executable_path = "/home/jacob/Dokumente/AldaPraktikum/Code/third_party/ProcessMappingAnalyzer/build/processmappinganalyzer"
     command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
@@ -82,11 +83,11 @@ def run_single_experiment(args):
 args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "1000"]
 args2 = ["./res/sharedMapConfigs/sharedMap_config2.json", "./res/dynGraphs/haggle.seq", "1000"]
 args3 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "1000"]
-args4 = ["./res/sharedMapConfigs/sharedMap_config2.json", "./res/dynGraphs/munmun_digg.seq", "1000"]
+args4 = ["./res/sharedMapConfigs/sharedMap_config3.json", "./res/dynGraphs/munmun_digg.seq", "100"]
 
 
-#! doesnt work with config 2. :(
-repartitioning_time, communication_cost = run_single_experiment(args1)
+
+repartitioning_time, communication_cost = run_single_experiment(args4)
 print("Repartitioning Time: ", repartitioning_time)
 print("Communication Cost: ", communication_cost)
 

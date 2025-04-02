@@ -75,11 +75,9 @@ std::vector<std::tuple<int, int>> graphRFS::heuristicAssignment(const std::vecto
 
 
 
-void graphRFS::repartition() {
+void graphRFS::repartition(std::string configFile) {
     
-    //TODO eventuell auslagern in die Klasse
-    std::string configFile = "./res/sharedMapConfigs/sharedMap_config1.json";
-    
+
     // 1. Berechne neue Partition mit shared map
     
     std::vector<long> old_partition = this->partition;

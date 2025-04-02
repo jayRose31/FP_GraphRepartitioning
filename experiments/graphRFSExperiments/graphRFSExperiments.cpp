@@ -24,7 +24,8 @@ int main(int argc, char* argv[]) {
     // Read arguments from the command line
     std::string configFile = argv[1];  
     std::string graphFilename = argv[2];   
-    int numberOfUpdates;              
+    int numberOfUpdates;      
+    
 
     // Convert the third argument to an integer
     try {
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
     // Zeit messen
     auto start = std::chrono::high_resolution_clock::now(); // Uhr starten
 
-    g.repartition();
+    g.repartition(configFile);
     
     auto stop = std::chrono::high_resolution_clock::now(); // Uhr stoppen
     

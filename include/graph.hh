@@ -42,7 +42,8 @@ class Graph{
        void add_edge(long start_node, long destination_node);
        
        // Hier keine Implementierung, nur in den Kinderklassen
-       virtual void repartition();
+       virtual void repartition(std::string configFile);
+
 
        void remove_edge(long start_node, long destination_node);
        void printGraph();

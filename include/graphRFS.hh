@@ -3,6 +3,7 @@
 
 #include "graph.hh"
 #include <tuple>
+#include <string>
 
 
 /*
@@ -23,7 +24,7 @@ class graphRFS : public Graph {
     public:
 
         graphRFS(long node_count) : Graph(node_count) {}
-        void repartition() override;
+        void repartition(std::string configFile) override;
 
 };
 

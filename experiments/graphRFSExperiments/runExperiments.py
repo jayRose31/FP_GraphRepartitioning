@@ -116,36 +116,52 @@ update_steps = [10, 50, 100, 200, 500, 1000]
 repartitioning_time_all = []
 communication_cost_all = []
 
+rep_time_one_round = []
+comm_cost_one_round = []
+
 print("start running experiments: ")
 
-for _ in range(5):  # Run the loop 20 times
+number_of_experiments = 5
+
+for _ in range(number_of_experiments):  # Run the loop 20 times
     for steps in update_steps:
-        args = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", str(steps)]
+        args = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", str(steps)]
         repartitioning_time, communication_cost = run_experiment_with_median(args)
-        repartitioning_time_all.append(repartitioning_time)
-        communication_cost_all.append(communication_cost)
+        rep_time_one_round.append(repartitioning_time)
+        comm_cost_one_round.append(communication_cost)
+    repartitioning_time_all.append(rep_time_one_round)
+    communication_cost_all.append(comm_cost_one_round)
+    rep_time_one_round = []
+    comm_cost_one_round = []
 
 
-# Write the results to a file
-output_file = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_summary.txt"
-count = 0
-with open(output_file, "w") as file:
-    file.write("Repartitioning Times:\n")
-    for time in repartitioning_time_all:
-        file.write(f"{time}\n")
-        count += 1
-        if count == 6:
-            count = 0
-            file.write("\n")
-        
-    file.write("\n")
-    file.write("Communication Costs:\n")
-    for cost in communication_cost_all:
-        file.write(f"{cost}\n")
-        count += 1
-        if count == 6:
-            count = 0
-            file.write("\n")
-    file.write("\n")
+experiment_labeling = []
+for i in range(len(update_steps)):
+    experiment_labeling.append(i)
+
+
+# Plot the results and save plot to file
+plt.figure(figsize=(10, 5))
+
+for i in range(number_of_experiments):
+    plt.scatter(experiment_labeling, repartitioning_time_all[i], marker='o', color="blue")  # Use scatter plot for points
+plt.xlabel('Update Steps')
+plt.title('Repartitioning Time vs Update Steps')
+plt.legend()
+plt.grid()
+plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results.png")  # Save the plot as a PNG file
+plt.close()
+
+plt.figure(figsize=(10, 5))
+for i in range(number_of_experiments):
+    plt.scatter(experiment_labeling, communication_cost_all[i], marker='o', color="blue")  # Use scatter plot for points
+plt.xlabel('Update Steps')
+plt.title('Communication Cost vs Update Steps')
+plt.legend()
+plt.grid()
+plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results_communication_cost.png")  # Save the plot as a PNG file
+plt.close()
+
+
 
 print("finished experiments")

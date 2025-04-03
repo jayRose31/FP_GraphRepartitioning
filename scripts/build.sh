@@ -20,11 +20,21 @@ fi
 
 cd "$BUILD_DIR"
 
+
+
+# ich sette hier einfach den build type, obwohl dadrunter diese abfrage ist
+# ich bin einfach faul!
+cmake .. -DCMAKE_BUILD_TYPE=Release
+
+
+
 # Führe CMake nur aus, wenn es noch nicht konfiguriert wurde
 if [ ! -f "CMakeCache.txt" ]; then
     echo "Konfiguriere das Projekt mit CMake..."
     cmake ..
 fi
+
+
 
 # Baue das Projekt mit mehreren Threads
 echo "Baue das Projekt..."

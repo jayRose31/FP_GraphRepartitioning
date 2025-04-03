@@ -4,6 +4,9 @@ import subprocess
 import os
 import time
 import json
+import statistics
+import matplotlib.pyplot as plt
+
 
 # input: args := [sharedMapConfig, graphIn, numberUpdatesTillRepartition] array of String
 # Format für Dateipfad ist: "./res/..."
@@ -78,6 +81,24 @@ def run_single_experiment(args):
     return repartitioning_time, communication_cost
 
 
+def run_experiment_with_median(args):
+    # List to store the results of repartitioning times and communication costs
+    repartitioning_times = []
+    communication_costs = []
+
+    # Run the experiment 3 times
+    for _ in range(3):
+        repartitioning_time, communication_cost = run_single_experiment(args)
+        repartitioning_times.append(float(repartitioning_time))  # Convert to float for numerical operations
+        communication_costs.append(float(communication_cost))   # Convert to float for numerical operations
+
+    # Calculate the median of the results
+    median_repartitioning_time = statistics.median(repartitioning_times)
+    median_communication_cost = statistics.median(communication_costs)
+
+    return median_repartitioning_time, median_communication_cost
+
+
 
 # run all the experiments
 args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "1000"]
@@ -87,8 +108,44 @@ args4 = ["./res/sharedMapConfigs/sharedMap_config3.json", "./res/dynGraphs/munmu
 
 
 
-repartitioning_time, communication_cost = run_single_experiment(args4)
-print("Repartitioning Time: ", repartitioning_time)
-print("Communication Cost: ", communication_cost)
 
-# visualize the results
+
+update_steps = [10, 50, 100, 200, 500, 1000]
+
+# Arrays to store all results
+repartitioning_time_all = []
+communication_cost_all = []
+
+print("start running experiments: ")
+
+for _ in range(5):  # Run the loop 20 times
+    for steps in update_steps:
+        args = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", str(steps)]
+        repartitioning_time, communication_cost = run_experiment_with_median(args)
+        repartitioning_time_all.append(repartitioning_time)
+        communication_cost_all.append(communication_cost)
+
+
+# Write the results to a file
+output_file = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_summary.txt"
+count = 0
+with open(output_file, "w") as file:
+    file.write("Repartitioning Times:\n")
+    for time in repartitioning_time_all:
+        file.write(f"{time}\n")
+        count += 1
+        if count == 6:
+            count = 0
+            file.write("\n")
+        
+    file.write("\n")
+    file.write("Communication Costs:\n")
+    for cost in communication_cost_all:
+        file.write(f"{cost}\n")
+        count += 1
+        if count == 6:
+            count = 0
+            file.write("\n")
+    file.write("\n")
+
+print("finished experiments")

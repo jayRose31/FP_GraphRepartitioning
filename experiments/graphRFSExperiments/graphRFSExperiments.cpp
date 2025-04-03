@@ -27,16 +27,8 @@ int main(int argc, char* argv[]) {
     int numberOfUpdates;      
     
 
-    // Convert the third argument to an integer
-    try {
-        numberOfUpdates = std::stoi(argv[3]);
-    } catch (const std::invalid_argument& e) {
-        std::cerr << "Invalid number for updates: " << argv[3] << std::endl;
-        return 1;
-    } catch (const std::out_of_range& e) {
-        std::cerr << "Number of updates out of range: " << argv[3] << std::endl;
-        return 1;
-    }
+    // Assert that the third argument is a valid integer
+    assert((numberOfUpdates = std::stoi(argv[3])) >= 0 && "Number of updates must be a non-negative integer");
 
 
     std::ifstream file(graphFilename); 

@@ -6,6 +6,8 @@
 graph_test
 graph_repartitioning
 
+/.vscode
+
 # Ignore all test files except for graph_test.cpp
 tests/*
 !tests/graph_test.cpp
@@ -19,3 +21,9 @@ test4
 testWriteGraph
 TODO.txt
 include/fileUtils_backup.txt
+
+experiments/graphRFSExperiments/*.png
+experiments/graphRFSExperiments/*.txt
+experiments/graphRFSExperiments/Graph_metis
+experiments/graphRFSExperiments/Graph_partition
+experiments/graphRFSExperiments/out_graph

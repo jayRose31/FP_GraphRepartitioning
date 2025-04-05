@@ -99,69 +99,142 @@ def run_experiment_with_median(args):
     return median_repartitioning_time, median_communication_cost
 
 
+# this test is to find out, how the repartitioning time and the communication cost
+# are affected by the number of update steps.
+def test_repartitioning_step_size():
+        
+    update_steps = [10, 50, 100, 200, 500, 1000]
 
-# run all the experiments
-args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "1000"]
-args2 = ["./res/sharedMapConfigs/sharedMap_config2.json", "./res/dynGraphs/haggle.seq", "1000"]
-args3 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "1000"]
-args4 = ["./res/sharedMapConfigs/sharedMap_config3.json", "./res/dynGraphs/munmun_digg.seq", "100"]
+    # Arrays to store all results
+    repartitioning_time_all = []
+    communication_cost_all = []
 
-
-
-
-
-update_steps = [10, 50, 100, 200, 500, 1000]
-
-# Arrays to store all results
-repartitioning_time_all = []
-communication_cost_all = []
-
-rep_time_one_round = []
-comm_cost_one_round = []
-
-print("start running experiments: ")
-
-number_of_experiments = 5
-
-for _ in range(number_of_experiments):  # Run the loop 20 times
-    for steps in update_steps:
-        args = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", str(steps)]
-        repartitioning_time, communication_cost = run_experiment_with_median(args)
-        rep_time_one_round.append(repartitioning_time)
-        comm_cost_one_round.append(communication_cost)
-    repartitioning_time_all.append(rep_time_one_round)
-    communication_cost_all.append(comm_cost_one_round)
     rep_time_one_round = []
     comm_cost_one_round = []
 
+    print("start running experiments: ")
 
-experiment_labeling = []
-for i in range(len(update_steps)):
-    experiment_labeling.append(i)
+    number_of_experiments = 5
 
-
-# Plot the results and save plot to file
-plt.figure(figsize=(10, 5))
-
-for i in range(number_of_experiments):
-    plt.scatter(experiment_labeling, repartitioning_time_all[i], marker='o', color="blue")  # Use scatter plot for points
-plt.xlabel('Update Steps')
-plt.title('Repartitioning Time vs Update Steps')
-plt.legend()
-plt.grid()
-plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results.png")  # Save the plot as a PNG file
-plt.close()
-
-plt.figure(figsize=(10, 5))
-for i in range(number_of_experiments):
-    plt.scatter(experiment_labeling, communication_cost_all[i], marker='o', color="blue")  # Use scatter plot for points
-plt.xlabel('Update Steps')
-plt.title('Communication Cost vs Update Steps')
-plt.legend()
-plt.grid()
-plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results_communication_cost.png")  # Save the plot as a PNG file
-plt.close()
+    for _ in range(number_of_experiments): 
+        for steps in update_steps:
+            args = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", str(steps)]
+            repartitioning_time, communication_cost = run_experiment_with_median(args)
+            rep_time_one_round.append(repartitioning_time)
+            comm_cost_one_round.append(communication_cost)
+        repartitioning_time_all.append(rep_time_one_round)
+        communication_cost_all.append(comm_cost_one_round)
+        rep_time_one_round = []
+        comm_cost_one_round = []
 
 
+    experiment_labeling = []
+    for i in range(len(update_steps)):
+        experiment_labeling.append(i)
 
-print("finished experiments")
+
+    # Plot the results and save plot to file
+    plt.figure(figsize=(10, 5))
+
+    for i in range(number_of_experiments):
+        plt.scatter(experiment_labeling, repartitioning_time_all[i], marker='o', color="blue")  # Use scatter plot for points
+    plt.xlabel('Update Steps')
+    plt.title('Repartitioning Time vs Update Steps')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results.png")  # Save the plot as a PNG file
+    plt.close()
+
+    plt.figure(figsize=(10, 5))
+    for i in range(number_of_experiments):
+        plt.scatter(experiment_labeling, communication_cost_all[i], marker='o', color="blue")  # Use scatter plot for points
+    plt.xlabel('Update Steps')
+    plt.title('Communication Cost vs Update Steps')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results_communication_cost.png")  # Save the plot as a PNG file
+    plt.close()
+
+
+
+    print("finished experiments")
+    return
+
+
+
+# this should test the algorithm for 5 different example graphs
+# with varying update steps.
+# I want to run the same experiment for the new algorithm and then compare results!
+def test_against_multiple_graphs():
+
+    # define configurations with the different graphs
+    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/dnc-temporalGraph.seq", "100"]
+    args2 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "100"]
+    args3 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "100"]
+    #args4 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/proper_loans.seq", "100"]
+    args5 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/sociopatterns-infections.seq", "100"]
+    
+    graph_names = ["dnc-temporalGraph", "haggle", "munmun_digg", "sociopatterns-infections"]
+    
+    args_all = [args1, args2, args3, args5]
+    
+    update_step_sizes = [10, 20 ,50, 100]
+    
+    repTime_one_graph = []
+    comm_one_graph = []
+    
+    repTime_all = []
+    comm_all = []
+    
+    print("start running experiments: ")
+    
+    # run experiments for all graphs and update step sizes
+    # gather data in repTime_all and comm_all
+    for args in args_all:
+        for step in update_step_sizes:
+            args[2] = str(step)
+            repartitioning_time, communication_cost = run_experiment_with_median(args)
+            repTime_one_graph.append(repartitioning_time)
+            comm_one_graph.append(communication_cost)
+        repTime_all.append(repTime_one_graph)
+        comm_all.append(comm_one_graph)
+        repTime_one_graph = []
+        comm_one_graph = []
+    
+    # plot the results in two different plots
+    # x achse ist update step size
+    # y achse ist repartitioning time
+    # Datenpunkte für alle Graphen jeweils eintragen, jeder Graph soll eigene farbe haben
+    plt.figure(figsize=(10, 5))
+    for i in range(len(args_all)):
+        plt.plot(update_step_sizes, repTime_all[i], marker='o', label=f"Graph: {graph_names[i]}")  # Use scatter plot for points
+    plt.xlabel('Update Steps')
+    plt.ylabel('Repartitioning Time')
+    plt.title('Repartitioning Time vs Update Steps')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results_multiple_graphs.png")  # Save the plot as a PNG file
+    plt.close()
+    
+    
+    
+    # x achse ist update step size
+    # y achse ist communication cost
+    # Datenpunkte für alle Graphen jeweils eintragen, jeder Graph soll eigene farbe haben
+    plt.figure(figsize=(10, 5))
+    for i in range(len(args_all)):
+        plt.plot(update_step_sizes, comm_all[i], marker='o', label=f"Graph: {graph_names[i]}")  # Use scatter plot for points
+    plt.xlabel('Update Steps')
+    plt.ylabel('Communication Cost')
+    plt.title('Communication Cost vs Update Steps')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/experiment_results_multiple_graphs_communication_cost.png")  # Save the plot as a PNG file
+    plt.close()
+    print("finished experiments")
+    return
+    
+
+test_against_multiple_graphs()
+
+

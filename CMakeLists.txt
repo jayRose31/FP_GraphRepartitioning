@@ -11,7 +11,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-set(SOURCES src/graph.cpp src/graph_io.cpp util/fileUtils.cpp src/graphRFS.cpp)
+set(SOURCES src/graph.cpp src/graph_io.cpp util/fileUtils.cpp src/graphRFS.cpp src/graphRFSMultilevel.cpp)
 
 add_subdirectory(third_party/SharedMap)
 add_subdirectory(third_party/ProcessMappingAnalyzer)
@@ -24,7 +24,7 @@ add_subdirectory(third_party/ProcessMappingAnalyzer)
 #add_executable(repartitioningWithFileInput src/repartitioningWithFileInput.cpp ${SOURCES})
 add_executable(graphRFSTest tests/function_tests/graphRFSTest.cpp ${SOURCES})
 add_executable(graphRFSExp experiments/graphRFSExperiments/graphRFSExperiments.cpp ${SOURCES})
-
+add_executable(graphRFSMultilevelTest tests/function_tests/graphRFSMultilevelTest.cpp ${SOURCES} )
 
 #target_link_libraries(graph_test sharedmap)
 #target_link_libraries(graph_repartitioning sharedmap nlohmann_json::nlohmann_json)
@@ -33,5 +33,6 @@ add_executable(graphRFSExp experiments/graphRFSExperiments/graphRFSExperiments.c
 #target_link_libraries(repartitioningWithFileInput sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSTest sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSExp sharedmap nlohmann_json::nlohmann_json)
+target_link_libraries(graphRFSMultilevelTest sharedmap nlohmann_json::nlohmann_json)
 
 

@@ -163,26 +163,84 @@ std::vector< std::vector<std::vector<int>> > graphRFSMultilevel::createSubMatric
     return matrices;
 }
 
+std::vector<std::tuple<int, int>> graphRFSMultilevel::shiftMatchingIndex(std::tuple<int, int> matching_originalMatrix , std::vector<std::tuple<int, int>> matching_subMatrix, int hierarchy) {
+
+    std::vector<std::tuple<int, int>> matchingShifted = {};
+
+    for(std::tuple<int, int>& match : matching_subMatrix) {
+        int i = std::get<0>(match) + std::get<0>(matching_originalMatrix) * hierarchy ;
+        int j = std::get<1>(match) + std::get<1>(matching_originalMatrix) * hierarchy ;
+        matchingShifted.push_back(std::make_tuple(i, j));
+    }
+
+    return matchingShifted;
+}
+
+
+std::vector<std::tuple<int, int>>  graphRFSMultilevel::matchTopToBottom(std::vector< std::vector<std::vector<int>> >  matrixHierarchy, std::vector<int> hierarchyArray) {
+
+    std::vector<std::tuple<int, int>> match0 = heuristicAssignment(matrixHierarchy.back());
+    matrixHierarchy.pop_back();
+    hierarchyArray.pop_back();
+
+    std::vector<std::vector<std::tuple<int, int>>> subMatrixMatching_All = {};
+    while (!matrixHierarchy.empty()) {
+        
+        std::vector< std::vector<std::vector<int>> > subMatrices = createSubMatrices(matrixHierarchy.back(), match0, hierarchyArray.back());
+        
+        std::vector<std::tuple<int, int>> subMatrixMatching;
+        std::vector<std::tuple<int, int>> MatchingShifted;
+        
+        for (int i = 0; i < subMatrices.size(); i++) {
+            subMatrixMatching = heuristicAssignment(subMatrices.at(i));
+            MatchingShifted = shiftMatchingIndex(match0.at(i), subMatrixMatching, hierarchyArray.back());
+            subMatrixMatching_All.push_back(MatchingShifted);
+        }
+
+        match0.clear();
+        for (const auto& subMatrixMatching : subMatrixMatching_All) {
+            match0.insert(match0.end(), subMatrixMatching.begin(), subMatrixMatching.end());
+        }
+        subMatrixMatching_All.clear();
+        matrixHierarchy.pop_back();
+        hierarchyArray.pop_back();
+    }
+
+    return match0;
+}
+
+
 
 
 
 void graphRFSMultilevel::test() {
     // Create a sparse matrix of dimension 8x8 with some entries 0 and some entries 1
-    std::vector<std::vector<int>> sparseMatrix(9, std::vector<int>(9, 0));
-    // Set one third of the entries to 1
-    int n = sparseMatrix.size();
-    int totalEntries = n * n;
-    int onesToSet = totalEntries / 3;
+    std::vector<std::vector<int>> sparseMatrix(8, std::vector<int>(8, 0));
+    
+    sparseMatrix = {
+        {1, 0, 1, 0, 0, 1, 2, 2},
+        {0, 1, 0, 1, 0, 0, 1, 0},
+        {1, 0, 1, 0, 1, 0, 0, 1},
+        {0, 1, 0, 1, 0, 1, 0, 0},
+        {0, 0, 1, 0, 1, 0, 1, 0},
+        {1, 0, 0, 1, 0, 1, 0, 1},
+        {0, 1, 0, 0, 1, 0, 1, 0},
+        {0, 5, 1, 0, 0, 1, 0, 1}
+    };
 
-    int count = 0;
-    for (int i = 0; i < n && count < onesToSet; ++i) {
-        for (int j = 0; j < n && count < onesToSet; ++j) {
-            if ((i + j) % 2 == 0) { // Example pattern to distribute 1s
-                sparseMatrix[i][j] = 1;
-                ++count;
-            }
-        }
-    }
+
+    sparseMatrix = {
+        {9, 0, 1, 0, 0, 1, 2, 2},
+        {0, 1, 10, 1, 0, 0, 1, 0},
+        {1, 0, 1, 0, 1, 10, 0, 1},
+        {0, 1, 0, 1, 0, 1, 10, 0},
+        {0, 0, 1, 0, 1, 0, 1, 10},
+        {1, 0, 0, 1, 10, 1, 0, 1},
+        {0, 1, 0, 10, 1, 0, 1, 0},
+        {0, 5, 1, 0, 0, 1, 0, 1}
+    };
+    
+   
 
     // Print the sparse matrix
     for (const auto& row : sparseMatrix) {
@@ -193,49 +251,16 @@ void graphRFSMultilevel::test() {
     }
 
 
-    std::vector<int> hierarchyArray = {3,3,2};
+    std::vector<int> hierarchyArray = {2,2,2};
     std::vector< std::vector<std::vector<int>> > matrices = createAllSimMatrices(sparseMatrix, hierarchyArray);
 
-    std::vector<std::vector<int>> shrunkenMatrix = matrices[1];
-
-    
-    std::cout << "first matrix: " << std::endl;
-        // Print the sparse matrix
-        for (const auto& row : shrunkenMatrix) {
-            for (const auto& val : row) {
-                std::cout << val << " ";
-            }
-            std::cout << std::endl;
-        }
-    
-    
-        shrunkenMatrix = matrices[2];
-
-    
-        std::cout << "second matrix: " << std::endl;
-            // Print the sparse matrix
-            for (const auto& row : shrunkenMatrix) {
-                for (const auto& val : row) {
-                    std::cout << val << " ";
-                }
-                std::cout << std::endl;
-            }
-
-
-    std::vector<std::tuple<int, int>> matching = {std::make_tuple(0, 0), std::make_tuple(0, 1), std::make_tuple(2, 1) };
-
-    std::vector< std::vector<std::vector<int>> > sub_matrices = createSubMatrices(matrices[0], matching, 3);
-    std::cout << "Sub matrices: " << std::endl;
-    for (size_t idx = 0; idx < sub_matrices.size(); ++idx) {
-        std::cout << "Sub matrix " << idx + 1 << ":" << std::endl;
-        for (const auto& row : sub_matrices[idx]) {
-            for (const auto& val : row) {
-                std::cout << val << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
+    std::vector<std::tuple<int, int>> matching = matchTopToBottom(matrices, hierarchyArray);
+    // Print the matching
+    std::cout << "Matching:" << std::endl;
+    for (const auto& match : matching) {
+        std::cout << "(" << std::get<0>(match) << ", " << std::get<1>(match) << ")" << std::endl;
     }
+
 
 
     return;
@@ -244,7 +269,43 @@ void graphRFSMultilevel::test() {
 
 void graphRFSMultilevel::repartition(std::string configFile){
 
+       // 1. Berechne neue Partition mit shared map
+    
+       std::vector<long> old_partition = this->partition;
+       this->partitionWithSharedMap(configFile);
+       std::vector<long> new_partition = this->partition;
+    
+   
+       // 2. erstelle similarity matrix
+       int k = fileUtils::getNumberPartitions(configFile);
+       std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
+   
+       // 3. mache hierarchisches mapping.
+       std::vector<int> hierarchyArray = fileUtils::readHierarchyFromFile(configFile);
 
+       std::vector< std::vector<std::vector<int>> > matrices = createAllSimMatrices(simMatrix, hierarchyArray);
+   
+       std::vector<std::tuple<int, int>> matching = matchTopToBottom(matrices, hierarchyArray);
+
+
+       // 4. Setze die neue Partition
+
+       std::vector<int> implicit_matching = std::vector<int>(matching.size());
+        for(const auto& match : matching) {
+            implicit_matching[std::get<1>(match)] = std::get<0>(match);
+        }
+        
+        std::vector<long> partition_permuted;
+        for (const auto& value : new_partition) {
+            partition_permuted.push_back(implicit_matching.at(value));
+        }
+
+        this->setPartition(partition_permuted);
+        
+    
+
+
+    return;
 
 
     return;

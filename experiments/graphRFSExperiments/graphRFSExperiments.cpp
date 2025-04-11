@@ -7,6 +7,7 @@
 
 #include "../../include/graph.hh"
 #include "../../include/graphRFS.hh"
+#include "../../include/graphRFSMultilevel.hh"
 #include "../../include/graph_io.hh"
 #include "../../include/fileUtils.hh"
 

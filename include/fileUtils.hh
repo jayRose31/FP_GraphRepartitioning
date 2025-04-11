@@ -34,6 +34,8 @@ public:
 
     static int getNumberPartitions(const std::string& filename) ;
 
+    static std::vector<int> readHierarchyFromFile(const std::string& filename);
+
 };
 
 #endif

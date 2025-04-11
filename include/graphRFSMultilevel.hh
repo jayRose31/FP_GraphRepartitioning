@@ -15,9 +15,9 @@ class graphRFSMultilevel : public Graph {
     std::vector< std::vector<std::vector<int>> > createAllSimMatrices(std::vector<std::vector<int>> simMatrix, std::vector<int> hierarchyArray);
     
     std::vector< std::vector<std::vector<int>> > createSubMatrices(std::vector<std::vector<int>> simMatrix, std::vector<std::tuple<int, int>> matching, int hierarchy);
-    // func match
-    // return type is matching  shiftIndexMatching();
+    std::vector<std::tuple<int, int>> shiftMatchingIndex(std::tuple<int, int> matching_originalMatrix , std::vector<std::tuple<int, int>> matching_subMatrix, int hierarchy) ;
 
+    std::vector<std::tuple<int, int>> matchTopToBottom(std::vector< std::vector<std::vector<int>> >  matrixHierarchy, std::vector<int> hierarchyArray) ;
 
     public:
         graphRFSMultilevel(long node_count) : Graph(node_count) {}

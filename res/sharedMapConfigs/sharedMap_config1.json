@@ -1,6 +1,6 @@
 {
-    "hierarchy": [2, 2, 4],
-    "distance": [1, 10, 30],
+    "hierarchy": [2, 2, 4, 2],
+    "distance": [1, 100, 300, 500],
     "l": 3,
     "imbalance": 0.03,
     "n_threads": 10,

@@ -210,11 +210,17 @@ std::vector<std::tuple<int, int>>  graphRFSMultilevel::matchTopToBottom(std::vec
 }
 
 
+std::vector<std::tuple<int, int>> graphRFSMultilevel::optimalMatching(const std::vector<std::vector<int>>& simMatrix) {
+    
+}
+
+
 
 
 
 void graphRFSMultilevel::test() {
     // Create a sparse matrix of dimension 8x8 with some entries 0 and some entries 1
+    
     std::vector<std::vector<int>> sparseMatrix(8, std::vector<int>(8, 0));
     
     sparseMatrix = {
@@ -226,9 +232,18 @@ void graphRFSMultilevel::test() {
         {1, 0, 0, 1, 0, 1, 0, 1},
         {0, 1, 0, 0, 1, 0, 1, 0},
         {0, 5, 1, 0, 0, 1, 0, 1}
-    };
-
-
+        };
+        
+        /*
+        std::vector<std::vector<int>> sparseMatrix(9, std::vector<int>(9, 0));
+        for (int j = 0; j < 9; ++j) {
+            for (int i = 0; i < 9; ++i) {
+                sparseMatrix[j][i] = i + j * 9 + 1;
+            }
+        }
+        
+        */
+    
     sparseMatrix = {
         {9, 0, 1, 0, 0, 1, 2, 2},
         {0, 1, 10, 1, 0, 0, 1, 0},
@@ -239,6 +254,7 @@ void graphRFSMultilevel::test() {
         {0, 1, 0, 10, 1, 0, 1, 0},
         {0, 5, 1, 0, 0, 1, 0, 1}
     };
+    
     
    
 

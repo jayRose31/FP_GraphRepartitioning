@@ -10,6 +10,10 @@ class graphRFSMultilevel : public Graph {
     
     std::vector<std::vector<int>> createSimilarityMatrix(const std::vector<long>& old_partition, const std::vector<long>& new_partition, int k);
     std::vector<std::tuple<int, int>> heuristicAssignment(const std::vector<std::vector<int>>& simMatrix);
+    
+    //TODO: implement hungarian algorithm to get optimal matching
+    //? maybe this will improve my results...
+    std::vector<std::tuple<int, int>> optimalMatching(const std::vector<std::vector<int>>& simMatrix);
 
     std::vector<std::vector<int>> shrinkMatrix(std::vector<std::vector<int>> simMatrix, int hierarchy  );
     std::vector< std::vector<std::vector<int>> > createAllSimMatrices(std::vector<std::vector<int>> simMatrix, std::vector<int> hierarchyArray);

@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 
 # input: args := [sharedMapConfig, graphIn, numberUpdatesTillRepartition] array of String
 # Format für Dateipfad ist: "./res/..."
-def run_single_experiment(args, multilevel=False):
+#? maybe kann man hier auch ein wert für die zeit als baseline hinzufügen
+def run_single_experiment_with_baseline(args, multilevel=False):
     
     # create files
     res_temp = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_temporary.txt"
@@ -90,7 +91,85 @@ def run_single_experiment(args, multilevel=False):
     return repartitioning_time, communication_cost, baseline_cost
 
 
-#! adjust to baseline cost return
+def run_single_experiment(args, multilevel=False):
+    
+    # create files
+    res_temp = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_temporary.txt"
+    with open(res_temp, "w"):
+        pass
+
+    analyzer_tool = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/analyzerTool_temporary.txt"
+    with open(analyzer_tool, "w"):
+        pass
+
+    cpp_executable = ""
+    
+    # run the program
+    if multilevel  :
+        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSMultilevelExp"
+    else:
+        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSExp"
+    
+    result = subprocess.run([cpp_executable] + args, capture_output=True, text=True)
+
+    # wichtig zum debuggen
+    if result.stderr:
+        print("Program Errors:")
+        print(result.stderr)
+    
+    
+    # read file and save the results
+    with open(res_temp, "r") as file:
+        repartitioning_time = file.readline().strip()
+        
+    
+
+    
+        
+    # ----------------- Benutze tool von Henning (analyzer) -----------------
+    with open(analyzer_tool, "r") as file:
+        graph_path = file.readline().strip()
+        partition_path = file.readline().strip()
+        out_path = file.readline().strip()
+        hierarchy = file.readline().strip()
+        distance = file.readline().strip()
+        epsilon = file.readline().strip()
+        
+    # die file am out_path muss ich noch erstellen.
+    with open(out_path, "w"):
+        pass
+         
+    
+    # Jetzt benutze ich das tool vom Henning. Abfahrt!
+    executable_path = "/home/jacob/Dokumente/AldaPraktikum/Code/third_party/ProcessMappingAnalyzer/build/processmappinganalyzer"
+    command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    # Dann lese ich die communication cost aus der Datei aus
+    with open(out_path, "r") as file:
+        data = json.load(file)
+
+    communication_cost = data["comm_cost"]
+
+    #? optional: lösche alle erstellten Dateien (graph_path, partition_path, out_path)
+
+    # ----------------------- done --------------------------------------------
+
+    # delete the file
+    if os.path.exists(res_temp):
+        os.remove(res_temp)
+    else:
+        print("The file does not exist, for some reason...")
+        
+    if os.path.exists(analyzer_tool):
+        os.remove(analyzer_tool)
+    else:
+        print("The file does not exist, for some reason...")
+        
+        
+    return repartitioning_time, communication_cost
+
+
 def run_experiment_with_median(args, multilevel=False):
     # List to store the results of repartitioning times and communication costs
     repartitioning_times = []
@@ -250,7 +329,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     
     
     # define configurations with the different graphs
-    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "100"]
+    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/proper_loans.seq", "100"]
 
     # run singlelevel algorithm with different step sizes
     
@@ -261,6 +340,9 @@ def compare_algorithms_multilevel_and_singlelevel():
     
     #update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
     update_steps = [10, 50, 100, 200, 400]
+    
+    
+    # ------------------------------------- look at single level algorithm ----------------------------------------------
 
     rep_time_singleLevel= []
     comm_cost_singleLevel = []
@@ -270,7 +352,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     print("start running experiments: ")
 
     for steps in update_steps:
-        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment(args1)   # run_experiment_with_median(args1)
+        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment_with_baseline(args1)   # run_experiment_with_median(args1)
         rep_time_singleLevel.append(repartitioning_time)
         comm_cost_singleLevel.append(communication_cost)
         comm_cost_baseline.append(baseline_cost)
@@ -302,12 +384,17 @@ def compare_algorithms_multilevel_and_singlelevel():
     plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/quotient_singlelevel_baseline.png")  # Save the plot as a PNG file
     plt.close()
     
+    
+    # ------------------------------------- look at multi level algorithm ----------------------------------------------
+    
+    
+    
     rep_time_multiLevel= []
     comm_cost_multiLevel = []
     comm_cost_baseline = []
 
     for steps in update_steps:
-        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment(args1, True) #run_experiment_with_median(args1, True)
+        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment_with_baseline(args1, True) #run_experiment_with_median(args1, True)
         rep_time_multiLevel.append(repartitioning_time)
         comm_cost_multiLevel.append(communication_cost)
         comm_cost_baseline.append(baseline_cost)

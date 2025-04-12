@@ -105,7 +105,7 @@ std::vector<std::vector<long>> Graph::getGraph() {
 
 
 //! Das hier sollte nichts auf die console printen
-void Graph::partitionWithSharedMap(std::string configFile){
+int Graph::partitionWithSharedMap(std::string configFile){
     
     //1. Graph in CSR Format umwandeln
     CSR csr = this->convertToCSR();
@@ -132,7 +132,7 @@ void Graph::partitionWithSharedMap(std::string configFile){
 
     if(!configSucces) {
         std::cerr << "Error reading config file. Exiting." << std::endl;
-        return ;
+        return 0 ;
     }
 
     
@@ -145,6 +145,7 @@ void Graph::partitionWithSharedMap(std::string configFile){
 
     this->setPartition(partition);
 
+    return comm_cost;
 }
 
 

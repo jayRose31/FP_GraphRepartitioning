@@ -176,6 +176,9 @@ int main(int argc, char* argv[]) {
     double duration_in_seconds = duration_repartitioning.count() / 1000.0;
     res_temp << duration_in_seconds << std::endl;
 
+    // 2. Baseline value communication cost
+    res_temp << g.get_baseline_comm_cost() <<std::endl;
+
 
     
     res_temp.close();

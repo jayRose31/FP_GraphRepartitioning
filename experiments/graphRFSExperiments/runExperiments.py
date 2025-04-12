@@ -8,6 +8,7 @@ import statistics
 import matplotlib.pyplot as plt
 
 
+
 # input: args := [sharedMapConfig, graphIn, numberUpdatesTillRepartition] array of String
 # Format für Dateipfad ist: "./res/..."
 def run_single_experiment(args, multilevel=False):
@@ -40,6 +41,9 @@ def run_single_experiment(args, multilevel=False):
     # read file and save the results
     with open(res_temp, "r") as file:
         repartitioning_time = file.readline().strip()
+        baseline_cost_str = file.readline().strip()
+    
+    baseline_cost = (int)(baseline_cost_str)
     
         
     # ----------------- Benutze tool von Henning (analyzer) -----------------
@@ -83,9 +87,10 @@ def run_single_experiment(args, multilevel=False):
         print("The file does not exist, for some reason...")
         
         
-    return repartitioning_time, communication_cost
+    return repartitioning_time, communication_cost, baseline_cost
 
 
+#! adjust to baseline cost return
 def run_experiment_with_median(args, multilevel=False):
     # List to store the results of repartitioning times and communication costs
     repartitioning_times = []
@@ -245,7 +250,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     
     
     # define configurations with the different graphs
-    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "100"]
+    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "100"]
 
     # run singlelevel algorithm with different step sizes
     
@@ -254,52 +259,91 @@ def compare_algorithms_multilevel_and_singlelevel():
     # print the values in a plot together
     
     
-    update_steps = [10, 50, 100, 200, 500, 1000]
+    #update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    update_steps = [10, 50, 100, 200, 400]
 
     rep_time_singleLevel= []
     comm_cost_singleLevel = []
+    
+    comm_cost_baseline = []
 
     print("start running experiments: ")
 
     for steps in update_steps:
-        repartitioning_time, communication_cost = run_experiment_with_median(args1)
+        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment(args1)   # run_experiment_with_median(args1)
         rep_time_singleLevel.append(repartitioning_time)
         comm_cost_singleLevel.append(communication_cost)
+        comm_cost_baseline.append(baseline_cost)
     
+    # Plot the communication costs for single-level and baseline
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, comm_cost_singleLevel, marker='o', label="Single-Level Algorithm", color="blue")
+    plt.plot(update_steps, comm_cost_baseline, marker='o', label="Baseline Cost", color="red")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Communication Cost')
+    plt.title('Communication Cost: Single-Level vs Baseline')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/comm_cost_single_vs_baseline.png")  # Save the plot as a PNG file
+    plt.close()
+    
+    # Calculate the quotient of baseline cost and single-level communication cost
+    quotient_singleLevel = [baseline / single if single != 0 else 0 for baseline, single in zip(comm_cost_baseline, comm_cost_singleLevel)]
+
+    # Plot the quotient for single-level
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, [single / baseline if baseline != 0 else 0 for single, baseline in zip(comm_cost_singleLevel, comm_cost_baseline)], 
+             marker='o', label="Single-Level / Baseline", color="green")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Quotient (Single-Level / Baseline)')
+    plt.title('Quotient of Single-Level and Baseline Communication Costs')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/quotient_singlelevel_baseline.png")  # Save the plot as a PNG file
+    plt.close()
     
     rep_time_multiLevel= []
     comm_cost_multiLevel = []
+    comm_cost_baseline = []
 
     for steps in update_steps:
-        repartitioning_time, communication_cost = run_experiment_with_median(args1, True)
+        repartitioning_time, communication_cost, baseline_cost =  run_single_experiment(args1, True) #run_experiment_with_median(args1, True)
         rep_time_multiLevel.append(repartitioning_time)
         comm_cost_multiLevel.append(communication_cost)
+        comm_cost_baseline.append(baseline_cost)
+        
+    
+    # Plot the communication costs for single-level and baseline
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, comm_cost_multiLevel, marker='o', label="multi-Level Algorithm", color="blue")
+    plt.plot(update_steps, comm_cost_baseline, marker='o', label="Baseline Cost", color="red")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Communication Cost')
+    plt.title('Communication Cost: multi-level vs Baseline')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/comm_cost_multi_vs_baseline.png")  # Save the plot as a PNG file
+    plt.close()
+    
+        # Calculate the quotient of baseline cost and single-level communication cost
+    # Calculate the quotient of baseline cost and single-level communication cost
+    quotient_multiLevel = [multi / baseline if baseline != 0 else 0 for multi, baseline in zip(comm_cost_multiLevel, comm_cost_baseline)]
+
+    # Plot the quotient for multi-level
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, quotient_multiLevel, marker='o', label="Multi-Level / Baseline", color="purple")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Quotient (Multi-Level / Baseline)')
+    plt.title('Quotient of Multi-Level and Baseline Communication Costs')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/quotient_multilevel_baseline.png")  # Save the plot as a PNG file
+    plt.close()
+    
     
     print("finish experiments")
     
-    # Plot repartitioning time for single-level and multi-level algorithms
-    plt.figure(figsize=(10, 5))
-    plt.plot(update_steps, rep_time_singleLevel, marker='o', color='blue', label='Single-Level')
-    plt.plot(update_steps, rep_time_multiLevel, marker='o', color='red', label='Multi-Level')
-    plt.xlabel('Update Steps')
-    plt.ylabel('Repartitioning Time')
-    plt.title('Repartitioning Time: Single-Level vs Multi-Level')
-    plt.legend()
-    plt.grid()
-    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/compare_repartitioning_time.png")
-    plt.close()
 
-    # Plot communication cost for single-level and multi-level algorithms
-    plt.figure(figsize=(10, 5))
-    plt.plot(update_steps, comm_cost_singleLevel, marker='o', color='blue', label='Single-Level')
-    plt.plot(update_steps, comm_cost_multiLevel, marker='o', color='red', label='Multi-Level')
-    plt.xlabel('Update Steps')
-    plt.ylabel('Communication Cost')
-    plt.title('Communication Cost: Single-Level vs Multi-Level')
-    plt.legend()
-    plt.grid()
-    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/compare_communication_cost.png")
-    plt.close()
 
 
 

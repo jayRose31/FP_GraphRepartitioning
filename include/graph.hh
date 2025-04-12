@@ -61,7 +61,7 @@ class Graph{
 
        // this will set the current partition of the graph
        // using the shared map algorithm
-       void partitionWithSharedMap(std::string configFile);
+       int partitionWithSharedMap(std::string configFile);
 
 
 };

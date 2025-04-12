@@ -81,7 +81,7 @@ void graphRFS::repartition(std::string configFile) {
     // 1. Berechne neue Partition mit shared map
     
     std::vector<long> old_partition = this->partition;
-    this->partitionWithSharedMap(configFile);
+    this->comm_cost_sharedMap = this->partitionWithSharedMap(configFile);
     std::vector<long> new_partition = this->partition;
  
 

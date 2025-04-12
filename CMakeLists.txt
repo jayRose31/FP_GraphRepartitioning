@@ -24,6 +24,7 @@ add_subdirectory(third_party/ProcessMappingAnalyzer)
 #add_executable(repartitioningWithFileInput src/repartitioningWithFileInput.cpp ${SOURCES})
 add_executable(graphRFSTest tests/function_tests/graphRFSTest.cpp ${SOURCES})
 add_executable(graphRFSExp experiments/graphRFSExperiments/graphRFSExperiments.cpp ${SOURCES})
+add_executable(graphRFSMultilevelExp experiments/graphRFSExperiments/graphRFSMultilevelExperiments.cpp ${SOURCES} )
 add_executable(graphRFSMultilevelTest tests/function_tests/graphRFSMultilevelTest.cpp ${SOURCES} )
 
 #target_link_libraries(graph_test sharedmap)
@@ -33,6 +34,7 @@ add_executable(graphRFSMultilevelTest tests/function_tests/graphRFSMultilevelTes
 #target_link_libraries(repartitioningWithFileInput sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSTest sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSExp sharedmap nlohmann_json::nlohmann_json)
+target_link_libraries(graphRFSMultilevelExp sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSMultilevelTest sharedmap nlohmann_json::nlohmann_json)
 
 

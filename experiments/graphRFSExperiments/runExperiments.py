@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 # input: args := [sharedMapConfig, graphIn, numberUpdatesTillRepartition] array of String
 # Format für Dateipfad ist: "./res/..."
-def run_single_experiment(args):
+def run_single_experiment(args, multilevel=False):
     
     # create files
     res_temp = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_temporary.txt"
@@ -21,9 +21,14 @@ def run_single_experiment(args):
     with open(analyzer_tool, "w"):
         pass
 
-
+    cpp_executable = ""
+    
     # run the program
-    cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSExp"
+    if multilevel  :
+        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSMultilevelExp"
+    else:
+        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSExp"
+    
     result = subprocess.run([cpp_executable] + args, capture_output=True, text=True)
 
     # wichtig zum debuggen
@@ -81,14 +86,14 @@ def run_single_experiment(args):
     return repartitioning_time, communication_cost
 
 
-def run_experiment_with_median(args):
+def run_experiment_with_median(args, multilevel=False):
     # List to store the results of repartitioning times and communication costs
     repartitioning_times = []
     communication_costs = []
 
     # Run the experiment 3 times
     for _ in range(3):
-        repartitioning_time, communication_cost = run_single_experiment(args)
+        repartitioning_time, communication_cost = run_single_experiment(args, multilevel)
         repartitioning_times.append(float(repartitioning_time))  # Convert to float for numerical operations
         communication_costs.append(float(communication_cost))   # Convert to float for numerical operations
 
@@ -235,6 +240,74 @@ def test_against_multiple_graphs():
     return
     
 
-test_against_multiple_graphs()
+
+def compare_algorithms_multilevel_and_singlelevel():
+    
+    
+    # define configurations with the different graphs
+    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/haggle.seq", "100"]
+
+    # run singlelevel algorithm with different step sizes
+    
+    # run multilevel algorithm with different step sizes
+    
+    # print the values in a plot together
+    
+    
+    update_steps = [10, 50, 100, 200, 500, 1000]
+
+    rep_time_singleLevel= []
+    comm_cost_singleLevel = []
+
+    print("start running experiments: ")
+
+    for steps in update_steps:
+        repartitioning_time, communication_cost = run_experiment_with_median(args1)
+        rep_time_singleLevel.append(repartitioning_time)
+        comm_cost_singleLevel.append(communication_cost)
+    
+    
+    rep_time_multiLevel= []
+    comm_cost_multiLevel = []
+
+    for steps in update_steps:
+        repartitioning_time, communication_cost = run_experiment_with_median(args1, True)
+        rep_time_multiLevel.append(repartitioning_time)
+        comm_cost_multiLevel.append(communication_cost)
+    
+    print("finish experiments")
+    
+    # Plot repartitioning time for single-level and multi-level algorithms
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, rep_time_singleLevel, marker='o', color='blue', label='Single-Level')
+    plt.plot(update_steps, rep_time_multiLevel, marker='o', color='red', label='Multi-Level')
+    plt.xlabel('Update Steps')
+    plt.ylabel('Repartitioning Time')
+    plt.title('Repartitioning Time: Single-Level vs Multi-Level')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/compare_repartitioning_time.png")
+    plt.close()
+
+    # Plot communication cost for single-level and multi-level algorithms
+    plt.figure(figsize=(10, 5))
+    plt.plot(update_steps, comm_cost_singleLevel, marker='o', color='blue', label='Single-Level')
+    plt.plot(update_steps, comm_cost_multiLevel, marker='o', color='red', label='Multi-Level')
+    plt.xlabel('Update Steps')
+    plt.ylabel('Communication Cost')
+    plt.title('Communication Cost: Single-Level vs Multi-Level')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/compare_communication_cost.png")
+    plt.close()
+
+
+
+
+    
+    
+    
+    
+compare_algorithms_multilevel_and_singlelevel()
 
 

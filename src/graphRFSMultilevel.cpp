@@ -179,7 +179,8 @@ std::vector<std::tuple<int, int>> graphRFSMultilevel::shiftMatchingIndex(std::tu
 
 std::vector<std::tuple<int, int>>  graphRFSMultilevel::matchTopToBottom(std::vector< std::vector<std::vector<int>> >  matrixHierarchy, std::vector<int> hierarchyArray) {
 
-    std::vector<std::tuple<int, int>> match0 = heuristicAssignment(matrixHierarchy.back());
+    //std::vector<std::tuple<int, int>> match0 = heuristicAssignment(matrixHierarchy.back());
+    std::vector<std::tuple<int, int>> match0 = optimalMatching(matrixHierarchy.back());
     matrixHierarchy.pop_back();
     hierarchyArray.pop_back();
 
@@ -192,7 +193,8 @@ std::vector<std::tuple<int, int>>  graphRFSMultilevel::matchTopToBottom(std::vec
         std::vector<std::tuple<int, int>> MatchingShifted;
         
         for (int i = 0; i < subMatrices.size(); i++) {
-            subMatrixMatching = heuristicAssignment(subMatrices.at(i));
+            // subMatrixMatching = heuristicAssignment(subMatrices.at(i));
+            subMatrixMatching = optimalMatching(subMatrices.at(i));
             MatchingShifted = shiftMatchingIndex(match0.at(i), subMatrixMatching, hierarchyArray.back());
             subMatrixMatching_All.push_back(MatchingShifted);
         }
@@ -209,9 +211,70 @@ std::vector<std::tuple<int, int>>  graphRFSMultilevel::matchTopToBottom(std::vec
     return match0;
 }
 
+const int INF = std::numeric_limits<int>::max();
 
-std::vector<std::tuple<int, int>> graphRFSMultilevel::optimalMatching(const std::vector<std::vector<int>>& simMatrix) {
-    
+// A is our similarity matrix
+std::vector<std::tuple<int, int>> graphRFSMultilevel::optimalMatching(const std::vector<std::vector<int>>& A) {
+    int n = A.size();
+    std::vector<std::vector<int>> cost = A;
+
+    // Negate the cost matrix for max-weight matching
+    int max_value = -INF;
+    for (const auto& row : cost)
+        for (int val : row)
+            max_value = std::max(max_value, val);
+
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            cost[i][j] = max_value - cost[i][j];
+
+    std::vector<int> u(n + 1), v(n + 1), p(n + 1), way(n + 1);
+
+    for (int i = 1; i <= n; ++i) {
+        p[0] = i;
+        std::vector<int> minv(n + 1, INF);
+        std::vector<bool> used(n + 1, false);
+        int j0 = 0;
+
+        do {
+            used[j0] = true;
+            int i0 = p[j0], delta = INF, j1 = -1;
+            for (int j = 1; j <= n; ++j) {
+                if (!used[j]) {
+                    int cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
+                    if (cur < minv[j]) {
+                        minv[j] = cur;
+                        way[j] = j0;
+                    }
+                    if (minv[j] < delta) {
+                        delta = minv[j];
+                        j1 = j;
+                    }
+                }
+            }
+            for (int j = 0; j <= n; ++j) {
+                if (used[j]) {
+                    u[p[j]] += delta;
+                    v[j] -= delta;
+                } else {
+                    minv[j] -= delta;
+                }
+            }
+            j0 = j1;
+        } while (p[j0] != 0);
+
+        do {
+            int j1 = way[j0];
+            p[j0] = p[j1];
+            j0 = j1;
+        } while (j0);
+    }
+
+    std::vector<std::tuple<int, int>> result(n);
+    for (int j = 1; j <= n; ++j)
+        result[p[j] - 1] = std::make_tuple(p[j] - 1, j - 1);
+
+    return result;    
 }
 
 
@@ -243,7 +306,8 @@ void graphRFSMultilevel::test() {
         }
         
         */
-    
+    /*
+    */
     sparseMatrix = {
         {9, 0, 1, 0, 0, 1, 2, 2},
         {0, 1, 10, 1, 0, 0, 1, 0},
@@ -288,7 +352,7 @@ void graphRFSMultilevel::repartition(std::string configFile){
        // 1. Berechne neue Partition mit shared map
     
        std::vector<long> old_partition = this->partition;
-       this->partitionWithSharedMap(configFile);
+       this->comm_cost_sharedMap = this->partitionWithSharedMap(configFile);
        std::vector<long> new_partition = this->partition;
     
    

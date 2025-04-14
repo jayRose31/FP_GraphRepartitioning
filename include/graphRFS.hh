@@ -27,6 +27,10 @@ class graphRFS : public Graph {
         std::vector<std::vector<int>> createSimilarityMatrix(const std::vector<long>& old_partition, const std::vector<long>& new_partition, int k);
         std::vector<std::tuple<int, int>> heuristicAssignment(const std::vector<std::vector<int>>& simMatrix);
 
+        
+        // this takes in the simMatrix of the leaf-level and the final assignment (of leafs / old partitions to new ones)
+        void determineMigrationCost(const std::vector<std::vector<int>>& simMatrix, const std::vector<std::tuple<int,int>>& matching);
+
     public:
 
         graphRFS(long node_count) : Graph(node_count) { 

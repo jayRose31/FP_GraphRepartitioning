@@ -74,6 +74,27 @@ std::vector<std::tuple<int, int>> graphRFS::heuristicAssignment(const std::vecto
 }
 
 
+void graphRFS::determineMigrationCost(const std::vector<std::vector<int>>& simMatrix, const std::vector<std::tuple<int,int>>& matching) {
+
+    
+    int sum_unmoved_vertices = 0;
+
+    for(auto match : matching) {
+        sum_unmoved_vertices += simMatrix.at(std::get<0>(match)).at(std::get<1>(match));
+    }
+
+    double sum_simMatrix = 0.0;
+    for (const auto& row : simMatrix) {
+        sum_simMatrix += std::accumulate(row.begin(), row.end(), 0);
+    }
+    
+    this->countMigratedNodes = sum_simMatrix- sum_unmoved_vertices;
+    this->migrationCost = this->countMigratedNodes / sum_simMatrix;
+
+    //this->countMigratedNodes = this->getNumberNodes() - sum_unmoved_vertices;
+}
+
+
 
 void graphRFS::repartition(std::string configFile) {
     
@@ -162,28 +183,10 @@ void graphRFS::repartition(std::string configFile) {
     //io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNewPermuted", *this);
     
 
-
-    return;
-
-    // Print all three partitions
-    std::cout << "Old Partition:" << std::endl;
-    for (const auto& value : old_partition) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "New Partition:" << std::endl;
-    for (const auto& value : new_partition) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Permuted Partition:" << std::endl;
-    for (const auto& value : partition_permuted) {
-        std::cout << value << " ";
-    }
-    std::cout << std::endl;
+    determineMigrationCost(simMatrix, matching);
 
 
     return;
+
+
 }

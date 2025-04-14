@@ -44,10 +44,12 @@ def run_single_experiment_with_baseline(args, multilevel=False):
         repartitioning_time_str = file.readline().strip()
         baseline_cost_str = file.readline().strip()
         baseline_speed_str = file.readline().strip()
+        migration_cost_str = file.readline().strip()
     
     repartitioning_time = (float)(repartitioning_time_str)
     baseline_cost = (int)(baseline_cost_str)
     baseline_speed = (float)(baseline_speed_str)
+    migration_cost = (float)(migration_cost_str)
     
         
     # ----------------- Benutze tool von Henning (analyzer) -----------------
@@ -91,7 +93,7 @@ def run_single_experiment_with_baseline(args, multilevel=False):
         print("The file does not exist, for some reason...")
         
         
-    return repartitioning_time, communication_cost, baseline_cost, baseline_speed
+    return repartitioning_time, communication_cost, baseline_cost, baseline_speed, migration_cost
 
 
 def run_single_experiment(args, multilevel=False):
@@ -341,8 +343,8 @@ def compare_algorithms_multilevel_and_singlelevel():
     # print the values in a plot together
     
     
-    #update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    update_steps = [10, 50, 100, 200, 400]
+    update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    #update_steps = [10, 50, 100, 200, 400]
     
     
     # ------------------------------------- look at single level algorithm ----------------------------------------------
@@ -353,14 +355,17 @@ def compare_algorithms_multilevel_and_singlelevel():
     comm_cost_baseline = []
     speed_baseline = []
 
+    migration_costs = []
+
     print("start running experiments: ")
 
     for steps in update_steps:
-        repartitioning_time, communication_cost, baseline_cost, baseline_speed_single =  run_single_experiment_with_baseline(args1)   # run_experiment_with_median(args1)
+        repartitioning_time, communication_cost, baseline_cost, baseline_speed_single, migration_cost_single =  run_single_experiment_with_baseline(args1)   # run_experiment_with_median(args1)
         rep_time_singleLevel.append(repartitioning_time)
         comm_cost_singleLevel.append(communication_cost)
         comm_cost_baseline.append(baseline_cost)
         speed_baseline.append(baseline_speed_single)
+        migration_costs.append(migration_cost_single)
 
     
     # Plot the communication costs for single-level and baseline
@@ -403,6 +408,17 @@ def compare_algorithms_multilevel_and_singlelevel():
     plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/portion_other_time_singlelevel.png")  # Save the plot as a PNG file
     plt.close()
     
+    # Plot the migration costs for single-level algorithm as a scatter plot
+    plt.figure(figsize=(10, 5))
+    plt.scatter(update_steps, migration_costs, label="Migration Costs (Single-Level)", color="orange")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Migration Costs')
+    plt.title('Migration Costs vs Update Steps (Single-Level Algorithm)')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/migration_costs_singlelevel.png")  # Save the plot as a PNG file
+    plt.close()
+    
     
     # ------------------------------------- look at multi level algorithm ----------------------------------------------
     
@@ -412,13 +428,15 @@ def compare_algorithms_multilevel_and_singlelevel():
     comm_cost_multiLevel = []
     comm_cost_baseline = []
     speed_baseline = []
+    migration_costs = []
 
     for steps in update_steps:
-        repartitioning_time, communication_cost, baseline_cost, baseline_speed_single =  run_single_experiment_with_baseline(args1, True) #run_experiment_with_median(args1, True)
+        repartitioning_time, communication_cost, baseline_cost, baseline_speed_single, migration_cost_single =  run_single_experiment_with_baseline(args1, True) #run_experiment_with_median(args1, True)
         rep_time_multiLevel.append(repartitioning_time)
         comm_cost_multiLevel.append(communication_cost)
         comm_cost_baseline.append(baseline_cost)
         speed_baseline.append(baseline_speed_single)
+        migration_costs.append(migration_cost_single)
         
     
     # Plot the communication costs for single-level and baseline
@@ -460,6 +478,17 @@ def compare_algorithms_multilevel_and_singlelevel():
     plt.legend()
     plt.grid()
     plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/portion_other_time_multilevel.png")  # Save the plot as a PNG file
+    plt.close()
+    
+    # Plot the migration costs for multi-level algorithm as a scatter plot
+    plt.figure(figsize=(10, 5))
+    plt.scatter(update_steps, migration_costs, label="Migration Costs (Multi-Level)", color="cyan")
+    plt.xlabel('Update Steps')
+    plt.ylabel('Migration Costs')
+    plt.title('Migration Costs vs Update Steps (Multi-Level Algorithm)')
+    plt.legend()
+    plt.grid()
+    plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/migration_costs_multilevel.png")  # Save the plot as a PNG file
     plt.close()
     
     

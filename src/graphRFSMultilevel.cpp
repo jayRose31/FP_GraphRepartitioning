@@ -280,10 +280,51 @@ std::vector<std::tuple<int, int>> graphRFSMultilevel::optimalMatching(const std:
 
 
 
+void graphRFSMultilevel::determineMigrationCost(const std::vector<std::vector<int>>& simMatrix, const std::vector<std::tuple<int,int>>& matching) {
+
+    int sum_unmoved_vertices = 0;
+
+    for(auto match : matching) {
+        sum_unmoved_vertices += simMatrix.at(std::get<0>(match)).at(std::get<1>(match));
+    }
+
+    double sum_simMatrix = 0.0;
+    for (const auto& row : simMatrix) {
+        sum_simMatrix += std::accumulate(row.begin(), row.end(), 0);
+    }
+    
+    this->countMigratedNodes = sum_simMatrix- sum_unmoved_vertices;
+    this->migrationCost = this->countMigratedNodes / sum_simMatrix;
+
+    //this->countMigratedNodes = this->getNumberNodes() - sum_unmoved_vertices;
+}
+
 
 void graphRFSMultilevel::test() {
     // Create a sparse matrix of dimension 8x8 with some entries 0 and some entries 1
     
+    std::vector<std::vector<int>> A ={
+        {0,1,3},
+        {6,2,2},
+        {3,5,4}
+    };
+
+    std::vector<std::tuple<int, int>> matching = {
+        std::make_tuple(1, 0),
+        std::make_tuple(2, 1),
+        std::make_tuple(0, 2)
+    };
+
+    
+
+    determineMigrationCost(A, matching);
+
+    std::cout << "number migrated nodes: " << this->countMigratedNodes << std::endl ; 
+    std::cout << "migration costs: " << this->migrationCost << std::endl ; 
+
+
+    return;
+    /*
     std::vector<std::vector<int>> sparseMatrix(8, std::vector<int>(8, 0));
     
     sparseMatrix = {
@@ -295,19 +336,10 @@ void graphRFSMultilevel::test() {
         {1, 0, 0, 1, 0, 1, 0, 1},
         {0, 1, 0, 0, 1, 0, 1, 0},
         {0, 5, 1, 0, 0, 1, 0, 1}
-        };
-        
-        /*
-        std::vector<std::vector<int>> sparseMatrix(9, std::vector<int>(9, 0));
-        for (int j = 0; j < 9; ++j) {
-            for (int i = 0; i < 9; ++i) {
-                sparseMatrix[j][i] = i + j * 9 + 1;
-            }
-        }
-        
-        */
-    /*
-    */
+    };
+    
+    
+    
     sparseMatrix = {
         {9, 0, 1, 0, 0, 1, 2, 2},
         {0, 1, 10, 1, 0, 0, 1, 0},
@@ -320,8 +352,8 @@ void graphRFSMultilevel::test() {
     };
     
     
-   
-
+    
+    
     // Print the sparse matrix
     for (const auto& row : sparseMatrix) {
         for (const auto& val : row) {
@@ -329,23 +361,26 @@ void graphRFSMultilevel::test() {
         }
         std::cout << std::endl;
     }
-
-
+    
+    
     std::vector<int> hierarchyArray = {2,2,2};
     std::vector< std::vector<std::vector<int>> > matrices = createAllSimMatrices(sparseMatrix, hierarchyArray);
-
+    
     std::vector<std::tuple<int, int>> matching = matchTopToBottom(matrices, hierarchyArray);
     // Print the matching
     std::cout << "Matching:" << std::endl;
     for (const auto& match : matching) {
         std::cout << "(" << std::get<0>(match) << ", " << std::get<1>(match) << ")" << std::endl;
     }
-
-
-
+    
+    
+    
     return;
-
+    
+    */
 }
+
+
 
 void graphRFSMultilevel::repartition(std::string configFile){
 
@@ -391,9 +426,10 @@ void graphRFSMultilevel::repartition(std::string configFile){
         
     
 
+    determineMigrationCost(simMatrix, matching);
 
     return;
 
 
-    return;
+
 }

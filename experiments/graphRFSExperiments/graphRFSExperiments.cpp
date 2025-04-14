@@ -182,6 +182,9 @@ int main(int argc, char* argv[]) {
     // 3. Zeit die sharedMap allein gebraucht hat:
     res_temp << g.get_baseline_speed() << std::endl;
 
+    //4. migration cost: what percent of nodes changed partition
+    res_temp << g.get_migrationCost() << std::endl;
+
 
     
     res_temp.close();

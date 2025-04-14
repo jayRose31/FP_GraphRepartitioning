@@ -28,8 +28,8 @@ class graphRFSMultilevel : public Graph {
 
     std::vector<std::tuple<int, int>> matchTopToBottom(std::vector< std::vector<std::vector<int>> >  matrixHierarchy, std::vector<int> hierarchyArray) ;
 
-    void determine_migrationCost();
-    void determine_countMigrationNodes();
+    
+    void determineMigrationCost(const std::vector<std::vector<int>>& simMatrix, const std::vector<std::tuple<int,int>>& matching);
 
     public:
         graphRFSMultilevel(long node_count) : Graph(node_count) {

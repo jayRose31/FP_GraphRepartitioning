@@ -352,7 +352,14 @@ void graphRFSMultilevel::repartition(std::string configFile){
        // 1. Berechne neue Partition mit shared map
     
        std::vector<long> old_partition = this->partition;
+        
+       auto start = std::chrono::high_resolution_clock::now();
        this->comm_cost_sharedMap = this->partitionWithSharedMap(configFile);
+       auto end = std::chrono::high_resolution_clock::now();
+       std::chrono::duration<double> elapsed = end - start;
+    
+        this->speed_sharedMap = elapsed.count();
+
        std::vector<long> new_partition = this->partition;
     
    

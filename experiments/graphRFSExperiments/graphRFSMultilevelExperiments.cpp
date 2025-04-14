@@ -86,8 +86,8 @@ int main(int argc, char* argv[]) {
     auto stop = std::chrono::high_resolution_clock::now(); // Uhr stoppen
     
     // Dauer berechnen
-    auto duration_repartitioning = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-
+    //auto duration_repartitioning = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    std::chrono::duration<double> duration_repartitioning = stop - start;
 
     // fertig
     file.close();
@@ -173,11 +173,14 @@ int main(int argc, char* argv[]) {
 
     // Ergebnisse schreiben
     // 1. Zeit zum repartitionieren in sekunden
-    double duration_in_seconds = duration_repartitioning.count() / 1000.0;
+    double duration_in_seconds = duration_repartitioning.count() /* / 1000.0 */ ;
     res_temp << duration_in_seconds << std::endl;
 
     // 2. Baseline value communication cost
     res_temp << g.get_baseline_comm_cost() <<std::endl;
+
+    // 3. Zeit die sharedMap allein gebraucht hat:
+    res_temp << g.get_baseline_speed() << std::endl;
 
 
     

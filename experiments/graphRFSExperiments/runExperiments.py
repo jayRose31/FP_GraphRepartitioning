@@ -343,8 +343,9 @@ def compare_algorithms_multilevel_and_singlelevel():
     # print the values in a plot together
     
     
-    update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    #update_steps = [10, 50, 100, 200, 400]
+    #update_steps = [10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    update_steps = [100, 500 ,1000]
+    
     
     
     # ------------------------------------- look at single level algorithm ----------------------------------------------
@@ -360,6 +361,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     print("start running experiments: ")
 
     for steps in update_steps:
+        args1[2] = str(steps)
         repartitioning_time, communication_cost, baseline_cost, baseline_speed_single, migration_cost_single =  run_single_experiment_with_baseline(args1)   # run_experiment_with_median(args1)
         rep_time_singleLevel.append(repartitioning_time)
         comm_cost_singleLevel.append(communication_cost)
@@ -419,6 +421,19 @@ def compare_algorithms_multilevel_and_singlelevel():
     plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/migration_costs_singlelevel.png")  # Save the plot as a PNG file
     plt.close()
     
+    # Calculate and print the mean of migration costs
+    mean_migration_cost = statistics.mean(migration_costs)
+    print(f"Mean Migration Cost (Single-Level): {mean_migration_cost}")
+
+    # Calculate and print the mean of portion of other time
+    mean_portion_other_time_singleLevel = statistics.mean(portion_other_time_singleLevel)
+    print(f"Mean Portion of Other Time (Single-Level): {mean_portion_other_time_singleLevel}")
+
+    # Calculate and print the mean of quotient (single-level / baseline)
+    mean_quotient_singlelevel_baseline = statistics.mean(
+        [single / baseline if baseline != 0 else 0 for single, baseline in zip(comm_cost_singleLevel, comm_cost_baseline)]
+    )
+    print(f"Mean Quotient (Single-Level / Baseline): {mean_quotient_singlelevel_baseline}")
     
     # ------------------------------------- look at multi level algorithm ----------------------------------------------
     
@@ -431,6 +446,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     migration_costs = []
 
     for steps in update_steps:
+        args1[2] = str(steps)
         repartitioning_time, communication_cost, baseline_cost, baseline_speed_single, migration_cost_single =  run_single_experiment_with_baseline(args1, True) #run_experiment_with_median(args1, True)
         rep_time_multiLevel.append(repartitioning_time)
         comm_cost_multiLevel.append(communication_cost)
@@ -491,6 +507,17 @@ def compare_algorithms_multilevel_and_singlelevel():
     plt.savefig("/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/migration_costs_multilevel.png")  # Save the plot as a PNG file
     plt.close()
     
+    # Calculate and print the mean of migration costs for multi-level
+    mean_migration_cost_multi = statistics.mean(migration_costs)
+    print(f"Mean Migration Cost (Multi-Level): {mean_migration_cost_multi}")
+
+    # Calculate and print the mean of portion of other time for multi-level
+    mean_portion_other_time_multi = statistics.mean(portion_other_time_multiLevel)
+    print(f"Mean Portion of Other Time (Multi-Level): {mean_portion_other_time_multi}")
+
+    # Calculate and print the mean of quotient (multi-level / baseline)
+    mean_quotient_multilevel_baseline = statistics.mean(quotient_multiLevel)
+    print(f"Mean Quotient (Multi-Level / Baseline): {mean_quotient_multilevel_baseline}")
     
     print("finish experiments")
     

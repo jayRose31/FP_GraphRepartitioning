@@ -1,9 +1,9 @@
 {
-    "hierarchy": [2, 2, 4, 2],
-    "distance": [1, 100, 300, 500],
+    "hierarchy": [4, 2, 2],
+    "distance": [1, 200, 500],
     "l": 3,
     "imbalance": 0.03,
-    "n_threads": 10,
+    "n_threads": 1,
     "seed": 0,
     "strategy": "NAIVE",
     "parallel_alg": "MTKAHYPAR_DEFAULT",

@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     // Read arguments from the command line
     std::string configFile = argv[1];  
     std::string graphFilename = argv[2];   
-    int numberOfUpdates;      
+    int numberOfUpdates = std::stoi(argv[3]);
     
 
     // Assert that the third argument is a valid integer
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 
 
     // Kanten einlesen
-    for(int i = 0; i < numberNodesAndUpdates[1] *2/ 3 ; i++) {
+    for(int i = 0; i < numberNodesAndUpdates[1] *2/ 3; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {

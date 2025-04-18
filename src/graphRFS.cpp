@@ -94,6 +94,71 @@ void graphRFS::determineMigrationCost(const std::vector<std::vector<int>>& simMa
     //this->countMigratedNodes = this->getNumberNodes() - sum_unmoved_vertices;
 }
 
+const int INF = std::numeric_limits<int>::max();
+
+std::vector<std::tuple<int, int>> graphRFS::optimalMatching(const std::vector<std::vector<int>>& A) {
+    int n = A.size();
+    std::vector<std::vector<int>> cost = A;
+
+    // Negate the cost matrix for max-weight matching
+    int max_value = -INF;
+    for (const auto& row : cost)
+        for (int val : row)
+            max_value = std::max(max_value, val);
+
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            cost[i][j] = max_value - cost[i][j];
+
+    std::vector<int> u(n + 1), v(n + 1), p(n + 1), way(n + 1);
+
+    for (int i = 1; i <= n; ++i) {
+        p[0] = i;
+        std::vector<int> minv(n + 1, INF);
+        std::vector<bool> used(n + 1, false);
+        int j0 = 0;
+
+        do {
+            used[j0] = true;
+            int i0 = p[j0], delta = INF, j1 = -1;
+            for (int j = 1; j <= n; ++j) {
+                if (!used[j]) {
+                    int cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
+                    if (cur < minv[j]) {
+                        minv[j] = cur;
+                        way[j] = j0;
+                    }
+                    if (minv[j] < delta) {
+                        delta = minv[j];
+                        j1 = j;
+                    }
+                }
+            }
+            for (int j = 0; j <= n; ++j) {
+                if (used[j]) {
+                    u[p[j]] += delta;
+                    v[j] -= delta;
+                } else {
+                    minv[j] -= delta;
+                }
+            }
+            j0 = j1;
+        } while (p[j0] != 0);
+
+        do {
+            int j1 = way[j0];
+            p[j0] = p[j1];
+            j0 = j1;
+        } while (j0);
+    }
+
+    std::vector<std::tuple<int, int>> result(n);
+    for (int j = 1; j <= n; ++j)
+        result[p[j] - 1] = std::make_tuple(p[j] - 1, j - 1);
+
+    return result;    
+}
+
 
 
 void graphRFS::repartition(std::string configFile) {
@@ -131,7 +196,8 @@ void graphRFS::repartition(std::string configFile) {
 
     
     // 3. Löse assignment problem
-    std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
+    std::vector<std::tuple<int, int>> matching = this->optimalMatching(simMatrix);
+    // std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
 
 
     /*
@@ -184,6 +250,21 @@ void graphRFS::repartition(std::string configFile) {
     
 
     determineMigrationCost(simMatrix, matching);
+
+    // Write the similarity matrix to a file
+    std::ofstream outFile("./tests/function_tests/similarity_matrix.txt");
+    if (outFile.is_open()) {
+        outFile << "Similarity Matrix:" << std::endl;
+        for (const auto& row : simMatrix) {
+            for (const auto& value : row) {
+                outFile << value << " ";
+            }
+            outFile << std::endl;
+        }
+        outFile.close();
+    } else {
+        std::cerr << "Unable to open file for writing the similarity matrix." << std::endl;
+    }
 
 
     return;

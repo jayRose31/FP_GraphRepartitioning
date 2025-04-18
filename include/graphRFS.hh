@@ -26,6 +26,7 @@ class graphRFS : public Graph {
         // die Hilfsmethoden muss ich nicht nach außen sichtbar machen
         std::vector<std::vector<int>> createSimilarityMatrix(const std::vector<long>& old_partition, const std::vector<long>& new_partition, int k);
         std::vector<std::tuple<int, int>> heuristicAssignment(const std::vector<std::vector<int>>& simMatrix);
+        std::vector<std::tuple<int, int>> optimalMatching(const std::vector<std::vector<int>>& simMatrix);
 
         
         // this takes in the simMatrix of the leaf-level and the final assignment (of leafs / old partitions to new ones)

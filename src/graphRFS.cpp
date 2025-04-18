@@ -13,7 +13,7 @@ std::vector<std::vector<int>> graphRFS::createSimilarityMatrix(const std::vector
     std::vector<std::vector<int>> simMatrix(k, std::vector<int>(k, 0));
     
     for (size_t i=0; i < old_partition.size(); i++) {
-        simMatrix[old_partition[i]][new_partition[i]]++;
+        simMatrix.at(old_partition.at(i)).at(new_partition.at(i))++;
     }
 
     return simMatrix;
@@ -177,6 +177,8 @@ void graphRFS::repartition(std::string configFile) {
    
     std::vector<long> new_partition = this->partition;
  
+    
+
 
     // 2. erstelle similarity matrix
     int k = fileUtils::getNumberPartitions(configFile);
@@ -252,6 +254,7 @@ void graphRFS::repartition(std::string configFile) {
     determineMigrationCost(simMatrix, matching);
 
     // Write the similarity matrix to a file
+    /*
     std::ofstream outFile("./tests/function_tests/similarity_matrix.txt");
     if (outFile.is_open()) {
         outFile << "Similarity Matrix:" << std::endl;
@@ -265,6 +268,7 @@ void graphRFS::repartition(std::string configFile) {
     } else {
         std::cerr << "Unable to open file for writing the similarity matrix." << std::endl;
     }
+    */
 
 
     return;

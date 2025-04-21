@@ -334,7 +334,7 @@ def compare_algorithms_multilevel_and_singlelevel():
     
     
     # define configurations with the different graphs
-    args1 = ["./res/sharedMapConfigs/sharedMap_config2.json", "./res/dynGraphs/dnc-temporalGraph.seq", "100"]
+    args1 = ["./res/sharedMapConfigs/sharedMap_config2.json", "./res/dynGraphs/static1_reformatted.seq", "100"]
 
     # run singlelevel algorithm with different step sizes
     

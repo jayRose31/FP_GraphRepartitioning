@@ -27,15 +27,6 @@ int main(int argc, char* argv[]) {
     std::string graphFilename = argv[2];   
     int numberOfUpdates = std::stoi(argv[3]);
     
-    std::string filename_updates = "./experiments/graphRFSExperiments/updateSteps.txt";
-
-    std::ofstream updates_file(filename_updates);
-    if (!updates_file) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << filename_updates << std::endl;
-        return 1;
-    }
-    updates_file << "numberOfUpdates: " << numberOfUpdates << " (type: int)" << std::endl;
-    updates_file.close();
 
     // Assert that the third argument is a valid integer
     assert((numberOfUpdates = std::stoi(argv[3])) >= 0 && "Number of updates must be a non-negative integer");

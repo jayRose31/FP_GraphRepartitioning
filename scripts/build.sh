@@ -28,6 +28,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 
 
 
+
+
 # Führe CMake nur aus, wenn es noch nicht konfiguriert wurde
 if [ ! -f "CMakeCache.txt" ]; then
     echo "Konfiguriere das Projekt mit CMake..."

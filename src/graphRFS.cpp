@@ -94,6 +94,7 @@ void graphRFS::determineMigrationCost(const std::vector<std::vector<int>>& simMa
     //this->countMigratedNodes = this->getNumberNodes() - sum_unmoved_vertices;
 }
 
+
 const int INF = std::numeric_limits<int>::max();
 
 std::vector<std::tuple<int, int>> graphRFS::optimalMatching(const std::vector<std::vector<int>>& A) {
@@ -169,7 +170,9 @@ void graphRFS::repartition(std::string configFile) {
     std::vector<long> old_partition = this->partition;
    
     auto start = std::chrono::high_resolution_clock::now();
+
     this->comm_cost_sharedMap = this->partitionWithSharedMap(configFile);
+    
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
  
@@ -184,50 +187,11 @@ void graphRFS::repartition(std::string configFile) {
     int k = fileUtils::getNumberPartitions(configFile);
     std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
 
-    /*
-    
-    // Print the similarity matrix
-    std::cout << "Similarity Matrix:" << std::endl;
-    for (const auto& row : simMatrix) {
-        for (const auto& value : row) {
-            std::cout << value << " ";
-        }
-        std::cout << std::endl;
-    }
-    */
 
     
     // 3. Löse assignment problem
     std::vector<std::tuple<int, int>> matching = this->optimalMatching(simMatrix);
     // std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
-
-
-    /*
-    // Order the matching entries by the first value of the tuple
-    std::sort(matching.begin(), matching.end(), [](const std::tuple<int, int>& a, const std::tuple<int, int>& b) {
-        return std::get<0>(a) < std::get<0>(b);
-    });
-    
-    // Print all matching values
-    std::cout << "Matching:" << std::endl;
-    for (const auto& match : matching) {
-        std::cout << "(" << std::get<0>(match) << ", " << std::get<1>(match) << ")" << std::endl;
-    }
-    */
-
-
-    //test:
-    /*
-    std::vector<int> implicit_test = std::vector<int>(3);
-    std::vector<std::tuple<int, int>> test = {std::make_tuple(0, 2), std::make_tuple(1, 0), std::make_tuple(2, 1)};
-    for(const auto& match: test) {
-        implicit_test[std::get<1>(match)] = std::get<0>(match);
-    }
-    
-    for (const auto& value : implicit_test) {
-        std::cout << value << " ";
-    }
-    */
 
 
     // 4. Permutiere die Partition
@@ -243,32 +207,9 @@ void graphRFS::repartition(std::string configFile) {
 
     // 5. Setze die neue Partition
         
-    //! schreibe die partitionen to memory for testing
-    //GraphIo io;
-    //io.writeGraphToFileMetis("./res/repartitioningTestGraphs/Graph_metis", *this);
-    //io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNew", *this);
-    this->setPartition(partition_permuted);
-    //io.writePartitionToFile("./res/repartitioningTestGraphs/Graph_partitionNewPermuted", *this);
-    
+    this->setPartition(partition_permuted);    
 
     determineMigrationCost(simMatrix, matching);
-
-    // Write the similarity matrix to a file
-    /*
-    std::ofstream outFile("./tests/function_tests/similarity_matrix.txt");
-    if (outFile.is_open()) {
-        outFile << "Similarity Matrix:" << std::endl;
-        for (const auto& row : simMatrix) {
-            for (const auto& value : row) {
-                outFile << value << " ";
-            }
-            outFile << std::endl;
-        }
-        outFile.close();
-    } else {
-        std::cerr << "Unable to open file for writing the similarity matrix." << std::endl;
-    }
-    */
 
 
     return;

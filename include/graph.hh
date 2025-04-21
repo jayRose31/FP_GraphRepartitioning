@@ -25,10 +25,6 @@ struct CSR{
 */
 class Graph{
     protected:
-        // nodes
-        // edges
-        // partition
-        // Gewichte?
         int edge_count;
         
         std::vector<std::vector<long>> adjacency_list;

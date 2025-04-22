@@ -402,12 +402,38 @@ void graphRFSMultilevel::repartition(std::string configFile){
        int k = fileUtils::getNumberPartitions(configFile);
        std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
    
+
+
        // 3. mache hierarchisches mapping.
        std::vector<int> hierarchyArray = fileUtils::readHierarchyFromFile(configFile);
 
        std::vector< std::vector<std::vector<int>> > matrices = createAllSimMatrices(simMatrix, hierarchyArray);
    
        std::vector<std::tuple<int, int>> matching = matchTopToBottom(matrices, hierarchyArray);
+
+
+       // Write the similarity matrix and matching to the same file
+       std::ofstream outputFile("./experiments/MultiLevel_similarity_matrix_and_matching.txt");
+       if (outputFile.is_open()) {
+           // Write the similarity matrix
+           outputFile << "Similarity Matrix:\n";
+           for (const auto& row : simMatrix) {
+           for (const auto& value : row) {
+               outputFile << value << " ";
+           }
+           outputFile << "\n";
+           }
+
+           // Write the matching
+           outputFile << "\nMatching:\n";
+           for (const auto& match : matching) {
+           outputFile << std::get<0>(match) << " " << std::get<1>(match) << "\n";
+           }
+
+           outputFile.close();
+       } else {
+           std::cerr << "Unable to open file to write similarity matrix and matching.\n";
+       }
 
 
        // 4. Setze die neue Partition

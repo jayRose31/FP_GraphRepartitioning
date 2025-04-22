@@ -188,10 +188,36 @@ void graphRFS::repartition(std::string configFile) {
     std::vector<std::vector<int>> simMatrix =  this->createSimilarityMatrix(old_partition, new_partition, k);
 
 
+
     
     // 3. Löse assignment problem
     std::vector<std::tuple<int, int>> matching = this->optimalMatching(simMatrix);
     // std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
+
+
+        // Write the similarity matrix and matching to the same file
+        std::ofstream outputFile("./experiments/singleLevel_similarity_matrix_and_matching.txt");
+        if (outputFile.is_open()) {
+            // Write the similarity matrix
+            outputFile << "Similarity Matrix:\n";
+            for (const auto& row : simMatrix) {
+            for (const auto& value : row) {
+                outputFile << value << " ";
+            }
+            outputFile << "\n";
+            }
+
+            // Write the matching
+            outputFile << "\nMatching:\n";
+            for (const auto& match : matching) {
+            outputFile << std::get<0>(match) << " " << std::get<1>(match) << "\n";
+            }
+
+            outputFile.close();
+        } else {
+            std::cerr << "Unable to open file to write similarity matrix and matching.\n";
+        }
+
 
 
     // 4. Permutiere die Partition
@@ -204,6 +230,7 @@ void graphRFS::repartition(std::string configFile) {
     for (const auto& value : new_partition) {
         partition_permuted.push_back(implicit_matching.at(value));
     }
+
 
     // 5. Setze die neue Partition
         

@@ -26,4 +26,6 @@ def reformat_file(input_file, output_file):
                     continue
 
 
-reformat_file("static1.graph.seq", "static1_formatted.seq" )
+
+
+reformat_file("add20.seq", "add20_formatted.seq" )

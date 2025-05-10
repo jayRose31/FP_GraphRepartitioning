@@ -35,13 +35,13 @@ class Graph{
         //Konstruktor
         Graph(long node_count);
 
-       void add_edge(long start_node, long destination_node);
+       virtual void add_edge(long start_node, long destination_node);
+       virtual void remove_edge(long start_node, long destination_node);
        
        // Hier keine Implementierung, nur in den Kinderklassen
        virtual void repartition(std::string configFile);
 
 
-       void remove_edge(long start_node, long destination_node);
        void printGraph();
 
 

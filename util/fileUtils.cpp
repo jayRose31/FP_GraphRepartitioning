@@ -73,6 +73,24 @@ std::vector<int> fileUtils::readHierarchyFromFile(const std::string& filename) {
     }
 }
 
+float fileUtils::readEpsilonFromFile(const std::string& filename) {
+
+    std::ifstream file(filename); // Datei im Textmodus öffnen
+    if (!file) {
+        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        return false;
+    }
+
+    json j;
+    file >> j;
+    float imbalance = j["imbalance"].get<float>();
+    file.close();
+   
+
+    return imbalance;
+}
+
+
 bool fileUtils::readConfigFileSharedMap(const std::string& filename, std::vector<int>& hierarchy, std::vector<int>& distance, int& l, float& imbalance, int& n_threads, int& seed, shared_map_strategy_type_t& strategy, shared_map_algorithm_type_t& parallel_alg, shared_map_algorithm_type_t& serial_alg, bool& verbose_error, bool& verbose_statistics) {
     std::ifstream file(filename); // Datei im Textmodus öffnen
     if (!file) {

@@ -4,21 +4,41 @@
 #include "graph.hh"
 
 #include <unordered_set>
+#include <unordered_map>
 #include <string>
-
 
 class graphLocalSearch : public Graph {
 
     private:
+        float imbalance;
+        long numberPartitions;
+
+        int numberMigratedNodes;
+        std::unordered_map<long, long> nodesPerPartition;
+
         std::unordered_set<long> dirty_vertices;
         void mark_dirty(long vertex);
 
         // this will only compute gains from the number of cut edges
+        //! maybe change to long long
         std::unordered_map<long, int> compute_gains_simplified(long from_node);
+
+        void determineBalance();
+        
+        bool canMove(long from_partition, long to_partition);
+        void move_vertex(long node, long to_partition);
 
     public:
 
-        graphLocalSearch(long node_count) : Graph(node_count) {}
+        graphLocalSearch(long node_count) : Graph(node_count) {
+            numberMigratedNodes = 0;
+            imbalance = 0;
+        }
+
+        void set_imbalance_from_file(std::string configFile);
+        void set_number_partitions_from_file(std::string configFile);
+
+        void determine_initial_partition(std::string configFile);
 
         void repartition(std::string configFile) override {this->repartition();};
         void repartition();

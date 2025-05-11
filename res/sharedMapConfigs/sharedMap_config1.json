@@ -2,7 +2,7 @@
     "hierarchy": [4, 2, 2],
     "distance": [1, 200, 300],
     "l": 3,
-    "imbalance": 0.03,
+    "imbalance": 0.10,
     "n_threads": 1,
     "seed": 0,
     "strategy": "NAIVE",

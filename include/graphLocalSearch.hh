@@ -35,6 +35,8 @@ class graphLocalSearch : public Graph {
             imbalance = 0;
         }
 
+        int get_migrationCost() {return numberMigratedNodes;}
+
         void set_imbalance_from_file(std::string configFile);
         void set_number_partitions_from_file(std::string configFile);
 

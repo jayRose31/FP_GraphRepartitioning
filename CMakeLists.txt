@@ -29,6 +29,7 @@ add_executable(graphRFSExp experiments/graphRFSExperiments/graphRFSExperiments.c
 add_executable(graphRFSMultilevelExp experiments/graphRFSExperiments/graphRFSMultilevelExperiments.cpp ${SOURCES} )
 add_executable(graphRFSMultilevelTest tests/function_tests/graphRFSMultilevelTest.cpp ${SOURCES} )
 add_executable(graphLSTest tests/function_tests/graphLocalSearchTest.cpp ${SOURCES})
+add_executable(graphLSExp experiments/graphLSExperiments/graphLSExperiments.cpp ${SOURCES})
 
 
 
@@ -42,6 +43,6 @@ target_link_libraries(graphRFSExp sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSMultilevelExp sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphRFSMultilevelTest sharedmap nlohmann_json::nlohmann_json)
 target_link_libraries(graphLSTest sharedmap nlohmann_json::nlohmann_json)
-
+target_link_libraries(graphLSExp sharedmap nlohmann_json::nlohmann_json)
 
 

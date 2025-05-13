@@ -64,8 +64,7 @@ int main(int argc, char* argv[]) {
 
     
     g.determine_initial_partition(configFile);
-    g.set_imbalance_from_file(configFile);
-    g.set_number_partitions_from_file(configFile);
+    g.initialise(configFile);
     
     for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);

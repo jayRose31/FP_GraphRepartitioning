@@ -73,6 +73,28 @@ std::vector<int> fileUtils::readHierarchyFromFile(const std::string& filename) {
     }
 }
 
+std::vector<int> fileUtils::readDistancesFromFile(const std::string& filename) {
+
+    std::ifstream file(filename); // Datei im Textmodus öffnen
+    if (!file) {
+        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        return {};
+    }
+
+    json j;
+    file >> j;
+    file.close();
+
+    if (j.contains("distance")) {
+        return j["distance"].get<std::vector<int>>();
+    } else {
+        std::cerr << "Hierarchie nicht in der Datei gefunden!" << std::endl;
+        return {};
+    }
+
+}
+
+
 float fileUtils::readEpsilonFromFile(const std::string& filename) {
 
     std::ifstream file(filename); // Datei im Textmodus öffnen

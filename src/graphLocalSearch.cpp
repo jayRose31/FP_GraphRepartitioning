@@ -56,6 +56,7 @@ void graphLocalSearch::determine_initial_partition(std::string configFile) {
 
     // determine how many nodes are in each partition
     determineBalance();
+    initialise(configFile);
 }
 
 
@@ -255,13 +256,8 @@ bool graphLocalSearch::canMove(long from_partition, long to_partition) {
 
     int nodeCount = this->getNumberNodes();
 
-    double lowerBound = (nodeCount / numberPartitions) * (1 - imbalance);
     double upperBound = (nodeCount / numberPartitions) * (1 + imbalance);
 
-    // get epsilon imbalance from config file
-    if ( nodesPerPartition.at(from_partition) - 1 < lowerBound ) {
-        allowed = false;
-    }
 
     if ( nodesPerPartition.at(to_partition) + 1 > upperBound) {
         allowed = false;

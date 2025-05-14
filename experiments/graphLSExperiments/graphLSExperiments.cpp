@@ -64,7 +64,6 @@ int main(int argc, char* argv[]) {
 
     
     g.determine_initial_partition(configFile);
-    g.initialise(configFile);
     
     for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
@@ -178,8 +177,6 @@ int main(int argc, char* argv[]) {
 
     //2. migration cost: what percent of nodes changed partition
     res_temp << g.get_migrationCost() << std::endl;
-
-    
 
     
     res_temp.close();

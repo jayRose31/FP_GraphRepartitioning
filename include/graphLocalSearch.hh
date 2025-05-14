@@ -15,7 +15,7 @@ class graphLocalSearch : public Graph {
         std::vector<int> hierarchy;
         std::vector<int> distances;
 
-        int numberMigratedNodes;
+        double numberMigratedNodes;
         std::unordered_map<long, long> nodesPerPartition;
 
         std::unordered_set<long> dirty_vertices;
@@ -42,11 +42,11 @@ class graphLocalSearch : public Graph {
     public:
 
         graphLocalSearch(long node_count) : Graph(node_count) {
-            numberMigratedNodes = 0;
+            numberMigratedNodes = 0.0;
             imbalance = 0;
         }
 
-        int get_migrationCost() {return numberMigratedNodes;}
+        double get_migrationCost() {return (double)(numberMigratedNodes / this->adjacency_list.size());}
 
         void set_imbalance_from_file(std::string configFile);
         void set_number_partitions_from_file(std::string configFile);

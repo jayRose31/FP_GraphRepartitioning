@@ -28,6 +28,7 @@ void graphLocalSearch::initialise(std::string configFile) {
     set_number_partitions_from_file(configFile);
     set_distance_from_file(configFile);
     set_hierarchy_from_file(configFile);
+    determineBalance();
 }
 
 
@@ -54,8 +55,6 @@ void graphLocalSearch::determine_initial_partition(std::string configFile) {
     this->partitionWithSharedMap(configFile);
     this->dirty_vertices.clear();
 
-    // determine how many nodes are in each partition
-    determineBalance();
     initialise(configFile);
 }
 
@@ -273,6 +272,7 @@ void graphLocalSearch::repartition() {
     // look at all dirty vertices and see if you want to move
     // them to another partition
 
+    //dirty_vertices = {4};
 
     for (const auto& vertex : dirty_vertices) {
 
@@ -281,20 +281,28 @@ void graphLocalSearch::repartition() {
 
         std::unordered_map<long, int> gains = compute_gains(vertex);
         
-        
+        // Print the gains for debugging purposes
+        std::cout << "Gains for vertex " << vertex << ": ";
+        for (const auto& [partition_id, gain] : gains) {
+            std::cout << "Partition " << partition_id << ": " << gain << ", ";
+        }
+        std::cout << std::endl;
+
+
         for (const auto& [partition_id, gain] : gains) {
             if (gain > gain_best) {
                 gain_best = gain;
                 best_partition = partition_id;
             }
         }
+        
+        
 
         if( gain_best > 0 && canMove(partition.at(vertex), best_partition)) {
-            move_vertex(vertex, best_partition);
+            //move_vertex(vertex, best_partition);
         }
 
     }
-
 
     dirty_vertices.clear();
 

@@ -10,13 +10,15 @@
 class graphLocalSearch : public Graph {
 
     private:
+        bool initialized;
+
         float imbalance;
         long numberPartitions;
-        std::vector<int> hierarchy;
         std::vector<int> distances;
+        std::vector<int> hierarchy;
+        std::unordered_map<long, long> nodesPerPartition;
 
         double numberMigratedNodes;
-        std::unordered_map<long, long> nodesPerPartition;
 
         std::unordered_set<long> dirty_vertices;
 
@@ -38,36 +40,34 @@ class graphLocalSearch : public Graph {
         void determine_location(const long partition_id, std::vector<long> &loc );
         long determine_distance(const long partiton_u, const long partition_v, std::vector<long> &u_loc, std::vector<long> &v_loc);
 
-
-    public:
-
-        graphLocalSearch(long node_count) : Graph(node_count) {
-            numberMigratedNodes = 0.0;
-            imbalance = 0;
-        }
-
-        double get_migrationCost() {return (double)(numberMigratedNodes / this->adjacency_list.size());}
-
+        // i make them private so the user can only set them
+        // via the initialise function
         void set_imbalance_from_file(std::string configFile);
         void set_number_partitions_from_file(std::string configFile);
         void set_distance_from_file(std::string configFile);
         void set_hierarchy_from_file(std::string configFile);
+
+    public:
+
+        graphLocalSearch(long node_count) : Graph(node_count) {
+            initialized = false;
+            numberMigratedNodes = 0.0;
+            imbalance = 0;
+            numberPartitions = 0;
+        }
+
+        double get_migrationCost() {return (double)(numberMigratedNodes / this->adjacency_list.size());}
         
         void initialise(std::string configFile);
-
-
         void determine_initial_partition(std::string configFile);
 
         void repartition(std::string configFile) override {this->repartition();};
         void repartition();
-        // brauche hier eine eigene funktion insert edge
-        // als wrapper mit extra funktionalität
 
         void add_edge(long start_node, long destination_node) override;
         void remove_edge(long start_node, long destination_node) override;
 
         void print_dirty_vertices();
-
 
 };
 

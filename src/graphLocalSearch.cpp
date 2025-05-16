@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 #include <unordered_map>
+#include <cmath>
 
 
 void graphLocalSearch::set_imbalance_from_file(std::string configFile) {
@@ -23,17 +24,6 @@ void graphLocalSearch::set_hierarchy_from_file(std::string configFile) {
     this->hierarchy = fileUtils::readHierarchyFromFile(configFile);
 }
 
-void graphLocalSearch::initialise(std::string configFile) {
-    set_imbalance_from_file(configFile);
-    set_number_partitions_from_file(configFile);
-    set_distance_from_file(configFile);
-    set_hierarchy_from_file(configFile);
-    determineBalance();
-}
-
-
-
-
 void graphLocalSearch::determineBalance() {
 
     nodesPerPartition.clear();
@@ -50,6 +40,18 @@ void graphLocalSearch::determineBalance() {
     // ! this could make mistakes
     this->numberPartitions = nodesPerPartition.size() ;
 }
+
+
+void graphLocalSearch::initialise(std::string configFile) {
+    set_imbalance_from_file(configFile);
+    set_number_partitions_from_file(configFile);
+    set_distance_from_file(configFile);
+    set_hierarchy_from_file(configFile);
+    determineBalance();
+
+    initialized = true;
+}
+
 
 void graphLocalSearch::determine_initial_partition(std::string configFile) {
     this->partitionWithSharedMap(configFile);
@@ -255,10 +257,11 @@ bool graphLocalSearch::canMove(long from_partition, long to_partition) {
 
     int nodeCount = this->getNumberNodes();
 
+    
     double upperBound = (nodeCount / numberPartitions) * (1 + imbalance);
+    int upperBoundCeil = std::ceil(upperBound);
 
-
-    if ( nodesPerPartition.at(to_partition) + 1 > upperBound) {
+    if ( nodesPerPartition.at(to_partition) + 1 > upperBoundCeil) {
         allowed = false;
     }
 
@@ -274,6 +277,13 @@ void graphLocalSearch::repartition() {
 
     //dirty_vertices = {4};
 
+    if(initialized == false) {
+        std::cerr << "error: trying to call repartitioning without initialising first. aborting." << std::endl;
+        std::cerr << "please first determine an initial partition with shared map or call initialize." << std::endl;
+        return;
+    }
+
+
     for (const auto& vertex : dirty_vertices) {
 
         int gain_best = 0;
@@ -281,25 +291,17 @@ void graphLocalSearch::repartition() {
 
         std::unordered_map<long, int> gains = compute_gains(vertex);
         
-        // Print the gains for debugging purposes
-        std::cout << "Gains for vertex " << vertex << ": ";
-        for (const auto& [partition_id, gain] : gains) {
-            std::cout << "Partition " << partition_id << ": " << gain << ", ";
-        }
-        std::cout << std::endl;
-
-
+        
         for (const auto& [partition_id, gain] : gains) {
             if (gain > gain_best) {
                 gain_best = gain;
                 best_partition = partition_id;
             }
         }
-        
-        
+                
 
         if( gain_best > 0 && canMove(partition.at(vertex), best_partition)) {
-            //move_vertex(vertex, best_partition);
+            move_vertex(vertex, best_partition);
         }
 
     }

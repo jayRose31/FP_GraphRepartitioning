@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string> 
 #include <chrono>
+#include <filesystem>
 
 #include "../../include/graph.hh"
 #include "../../include/graphRFS.hh"
@@ -21,6 +22,15 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates>" << std::endl;
         return 1;
     }
+
+    std::filesystem::path executable_path = std::filesystem::path(argv[0]).parent_path();
+    
+    std::filesystem::path analyzer_tool_path = executable_path / "../experiments/graphRFSExperiments/analyzerTool_temporary.txt";
+    std::filesystem::path graph_metis_path = executable_path / "../experiments/graphRFSExperiments/Graph_metis";
+    std::filesystem::path graph_partition_path = executable_path / "../experiments/graphRFSExperiments/Graph_partition";
+    std::filesystem::path out_graph_path = executable_path / "../experiments/graphRFSExperiments/out_graph";
+    std::filesystem::path results_temp_path = executable_path / "../experiments/graphRFSExperiments/results_temporary.txt";
+
 
     // Read arguments from the command line
     std::string configFile = argv[1];  
@@ -95,25 +105,25 @@ int main(int argc, char* argv[]) {
     
 
     // ---------- Schreibe Sachen damit ich in python das Tool von Henning benutzen kann ------------
-    std::string filename = "./experiments/graphRFSExperiments/analyzerTool_temporary.txt";
-    std::ofstream analyzer_tool(filename); 
+    // std::string filename = "./experiments/graphRFSExperiments/analyzerTool_temporary.txt";
+    std::ofstream analyzer_tool(analyzer_tool_path); 
     if (!analyzer_tool) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        std::cerr << "Fehler beim Öffnen der Datei: " << analyzer_tool_path << std::endl;
         return 1;
     }
 
 
-    std::string graph_metis_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_metis" ;
-    std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_partition";
-    std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/out_graph" ;
+    // std::string graph_metis_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_metis" ;
+    // std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_partition";
+    // std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/out_graph" ;
     
     GraphIo io;
-    io.writeGraphToFileMetis(graph_metis_filename, g);
-    io.writePartitionToFile(graph_partition_filename, g);
+    io.writeGraphToFileMetis(graph_metis_path.string(), g);
+    io.writePartitionToFile(graph_partition_path.string(), g);
 
-    analyzer_tool <<  graph_metis_filename << std::endl;
-    analyzer_tool <<  graph_partition_filename << std::endl;
-    analyzer_tool <<  out_graph_filename << std::endl;
+    analyzer_tool <<  graph_metis_path.string() << std::endl;
+    analyzer_tool <<  graph_partition_path.string() << std::endl;
+    analyzer_tool <<  out_graph_path.string() << std::endl;
     
 
     // Die anderen Paramter holen 
@@ -164,10 +174,10 @@ int main(int argc, char* argv[]) {
 
 
     // Datei öffnen zum schreiben der Ergebnisse
-    filename = "./experiments/graphRFSExperiments/results_temporary.txt";
-    std::ofstream res_temp(filename); 
+    // filename = "./experiments/graphRFSExperiments/results_temporary.txt";
+    std::ofstream res_temp(results_temp_path); 
     if (!res_temp) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << filename << std::endl;
+        std::cerr << "Fehler beim Öffnen der Datei: " << results_temp_path << std::endl;
         return 1;
     }
 

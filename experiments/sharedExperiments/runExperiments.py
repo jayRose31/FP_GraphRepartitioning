@@ -5,26 +5,27 @@ import json
 import statistics
 import matplotlib.pyplot as plt
 
+BASE_DIR = os.path.dirname(__file__)
 
 
 def run_single_experiment_RFS(args, multilevel=False):
     
     # create files
-    res_temp = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/results_temporary.txt"
+    res_temp = os.path.join(BASE_DIR, "../graphRFSExperiments/results_temporary.txt")
     with open(res_temp, "w"):
         pass
 
-    analyzer_tool = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/analyzerTool_temporary.txt"
+    analyzer_tool = os.path.join(BASE_DIR, "../graphRFSExperiments/analyzerTool_temporary.txt")
     with open(analyzer_tool, "w"):
         pass
 
     cpp_executable = ""
     
     # run the program
-    if multilevel  :
-        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSMultilevelExp"
+    if multilevel:
+        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSMultilevelExp")
     else:
-        cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphRFSExp"
+        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSExp")
     
     result = subprocess.run([cpp_executable] + args, capture_output=True, text=True)
 
@@ -40,6 +41,7 @@ def run_single_experiment_RFS(args, multilevel=False):
         baseline_cost_str = file.readline().strip()
         baseline_speed_str = file.readline().strip()
         migration_cost_str = file.readline().strip()
+    
     
     repartitioning_time = (float)(repartitioning_time_str)
     migration_cost = (float)(migration_cost_str)
@@ -60,7 +62,7 @@ def run_single_experiment_RFS(args, multilevel=False):
          
     
     # Jetzt benutze ich das tool vom Henning. Abfahrt!
-    executable_path = "/home/jacob/Dokumente/AldaPraktikum/Code/third_party/ProcessMappingAnalyzer/build/processmappinganalyzer"
+    executable_path = os.path.join(BASE_DIR, "../../third_party/ProcessMappingAnalyzer/build/processmappinganalyzer")
     command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
     result = subprocess.run(command, capture_output=True, text=True)
 
@@ -89,21 +91,20 @@ def run_single_experiment_RFS(args, multilevel=False):
     return repartitioning_time, communication_cost, migration_cost
 
 
+
 def run_single_experiment_LS(args):
     
     # create files
-    res_temp = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/results_temporary.txt"
+    res_temp = os.path.join(BASE_DIR, "../graphLSExperiments/results_temporary.txt")
     with open(res_temp, "w"):
         pass
 
-    analyzer_tool = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/analyzerTool_temporary.txt"
+    analyzer_tool = os.path.join(BASE_DIR, "../graphLSExperiments/analyzerTool_temporary.txt")
     with open(analyzer_tool, "w"):
         pass
 
-    cpp_executable = ""
     
-
-    cpp_executable = "/home/jacob/Dokumente/AldaPraktikum/Code/build/graphLSExp"
+    cpp_executable = os.path.join(BASE_DIR, "../../build/graphLSExp")
     
     result = subprocess.run([cpp_executable] + args, capture_output=True, text=True)
 
@@ -139,7 +140,7 @@ def run_single_experiment_LS(args):
          
     
     # Jetzt benutze ich das tool vom Henning. Abfahrt!
-    executable_path = "/home/jacob/Dokumente/AldaPraktikum/Code/third_party/ProcessMappingAnalyzer/build/processmappinganalyzer"
+    executable_path = os.path.join(BASE_DIR, "../../third_party/ProcessMappingAnalyzer/build/processmappinganalyzer")
     command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
     result = subprocess.run(command, capture_output=True, text=True)
 
@@ -170,10 +171,10 @@ def run_single_experiment_LS(args):
 
 def compare_algorithms():
     # define configurations with the different graphs
-    args1 = ["./res/sharedMapConfigs/sharedMap_config3.json", "./res/dynGraphs/facebook.seq", "100"]
+    args1 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "100"]
     
-    #update_steps = [0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    update_steps = [1000, 5000 ,10000, 20000, 30000,40000, 50000, 100000]
+    update_steps = [0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    #update_steps = [1000, 5000 ,10000, 20000, 30000,40000, 50000, 100000]
     #update_steps = [100, 10000, 50000, 100000]
     
     
@@ -185,7 +186,7 @@ def compare_algorithms():
     
     for steps in update_steps:
         args1[2] = str(steps)
-        repartitioning_time, communication_cost, migration_cost_single =  run_single_experiment_RFS(args1)   # run_experiment_with_median(args1)
+        repartitioning_time, communication_cost, migration_cost_single =  run_single_experiment_RFS(args1, True)   
         rep_time_RFS.append(repartitioning_time)
         comm_cost_RFS.append(communication_cost)
         migration_costs_RFS.append(migration_cost_single)
@@ -197,7 +198,7 @@ def compare_algorithms():
     
     for steps in update_steps:
         args1[2] = str(steps)
-        repartitioning_time, communication_cost, migration_cost_single =  run_single_experiment_LS(args1)   # run_experiment_with_median(args1)
+        repartitioning_time, communication_cost, migration_cost_single =  run_single_experiment_LS(args1)   
         rep_time_LS.append(repartitioning_time)
         comm_cost_LS.append(communication_cost)
         migration_costs_LS.append(migration_cost_single)

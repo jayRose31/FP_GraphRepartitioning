@@ -22,8 +22,17 @@ testWriteGraph
 TODO.txt
 include/fileUtils_backup.txt
 
+experiments/*.txt
+experiments/sharedExperiments/*.png
+
 experiments/graphRFSExperiments/*.png
 experiments/graphRFSExperiments/*.txt
 experiments/graphRFSExperiments/Graph_metis
 experiments/graphRFSExperiments/Graph_partition
 experiments/graphRFSExperiments/out_graph
+
+experiments/graphLSExperiments/*.png
+experiments/graphLSExperiments/*.txt
+experiments/graphLSExperiments/Graph_metis
+experiments/graphLSExperiments/Graph_partition
+experiments/graphLSExperiments/out_graph

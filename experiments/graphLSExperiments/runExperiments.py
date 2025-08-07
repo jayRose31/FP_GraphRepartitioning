@@ -83,7 +83,7 @@ def run_single_experiment(args):
     return repartitioning_time, communication_cost, migration_cost
 
 
-args3 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/dynGraphs/munmun_digg.seq", "1000"]
+args3 = ["./res/sharedMapConfigs/sharedMap_config1.json", "./res/debuggingTestGraphs/delaunay_n17_formatted.seq", "1000"]
 
 repartitioning_time, communication_cost, migration_cost= run_single_experiment(args3)
 print("Repartitioning Time:", repartitioning_time)

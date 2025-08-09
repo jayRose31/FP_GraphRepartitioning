@@ -33,10 +33,14 @@ int main(int argc, char* argv[]) {
 
 
     // Read arguments from the command line
-    std::string configFile = argv[1];  
-    std::string graphFilename = argv[2];   
+    std::string configFile_temp = argv[1];  
+    std::string graphFilename_temp = argv[2];   
     int numberOfUpdates = std::stoi(argv[3]);
     
+    std::filesystem::path configFile = executable_path / ".." / configFile_temp;
+    std::filesystem::path graphFilename = executable_path / ".." / graphFilename_temp;
+
+
 
     // Assert that the third argument is a valid integer
     assert((numberOfUpdates = std::stoi(argv[3])) >= 0 && "Number of updates must be a non-negative integer");

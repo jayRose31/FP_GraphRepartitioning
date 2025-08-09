@@ -413,6 +413,8 @@ void graphRFSMultilevel::repartition(std::string configFile){
 
 
        // Write the similarity matrix and matching to the same file
+       /*
+       
        std::ofstream outputFile("./experiments/MultiLevel_similarity_matrix_and_matching.txt");
        if (outputFile.is_open()) {
            // Write the similarity matrix
@@ -434,6 +436,7 @@ void graphRFSMultilevel::repartition(std::string configFile){
        } else {
            std::cerr << "Unable to open file to write similarity matrix and matching.\n";
        }
+           */
 
 
        // 4. Setze die neue Partition

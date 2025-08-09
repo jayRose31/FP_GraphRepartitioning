@@ -4,6 +4,7 @@ import time
 import json
 import statistics
 import matplotlib.pyplot as plt
+import glob
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -243,5 +244,63 @@ def compare_algorithms():
     print(migration_costs_LS)
 
 
+# TODO pick correct config for sharedMap
+# TODO pick good update stepsize: right now i only test with repartitioning after 100 steps
+#? Mit mehreren verschieden stepsizes experimente machen? Wie plotte ich das dann?
+def test_all_graphs():
+    # Pfad zu den Graphen
+    graph_folder = os.path.join(BASE_DIR, "../../res/final_real_dyn")
+    graph_files = glob.glob(os.path.join(graph_folder, "*.seq"))  # Alle Graph-Dateien mit der Endung .seq
+        
+    results = {}  # Dictionary für die Ergebnisse
+    
+    count = 0
+    
+    for graph_file in graph_files:
+        if count > 1:
+            break
+        
+        count += 1
+        
+        graph_name = os.path.basename(graph_file)  # Extrahiere den Namen des Graphen
+        results[graph_name] = {
+            "RFS": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
+            "RFS_multilevel": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
+            "LS": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []}
+        }
+        
+        # Erstelle den String im gewünschten Format
+        graph_string = f"./res/final_real_dyn/{graph_name}"
+        
+        # Argumente für die Experimente
+        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100"]
+        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100"]
+        
+        # Führe 5 Runs für jeden Algorithmus aus
+        for _ in range(5):
+            # RFS Experiment
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS)
+            results[graph_name]["RFS"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["RFS"]["communication_cost"].append(communication_cost)
+            results[graph_name]["RFS"]["migration_cost"].append(migration_cost)
+            
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS, multilevel=True)
+            results[graph_name]["RFS_multilevel"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["RFS_multilevel"]["communication_cost"].append(communication_cost)
+            results[graph_name]["RFS_multilevel"]["migration_cost"].append(migration_cost)
+            
+            # LS Experiment
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_LS(args_LS)
+            results[graph_name]["LS"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["LS"]["communication_cost"].append(communication_cost)
+            results[graph_name]["LS"]["migration_cost"].append(migration_cost)
+    
+    # Speichere die Ergebnisse in einer JSON-Datei
+    output_file = os.path.join(BASE_DIR, "experiment_results.json")
+    with open(output_file, "w") as json_file:
+        json.dump(results, json_file, indent=4)
+    
+    print(f"Results saved to {output_file}")
 
-compare_algorithms()
+
+test_all_graphs()

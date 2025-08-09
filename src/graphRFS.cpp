@@ -194,6 +194,7 @@ void graphRFS::repartition(std::string configFile) {
     std::vector<std::tuple<int, int>> matching = this->optimalMatching(simMatrix);
     // std::vector<std::tuple<int, int>> matching = this->heuristicAssignment(simMatrix);
 
+/*
 
         // Write the similarity matrix and matching to the same file
         std::ofstream outputFile("./experiments/singleLevel_similarity_matrix_and_matching.txt");
@@ -217,7 +218,7 @@ void graphRFS::repartition(std::string configFile) {
         } else {
             std::cerr << "Unable to open file to write similarity matrix and matching.\n";
         }
-
+*/
 
 
     // 4. Permutiere die Partition

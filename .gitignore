@@ -42,3 +42,6 @@ experiments/graphRFSExperiments/Graph_partition
 experiments/exp_supercomputer/notes.txt
 experiments/graphRFSExperiments/Graph_metis
 experiments/graphRFSExperiments/Graph_partition
+
+res/final_real_dyn/*
+res/debuggingTestGraphs/*

@@ -1,7 +1,7 @@
 {
-    "hierarchy": [2, 2, 2, 2],
-    "distance": [1, 200, 350, 500],
-    "l": 3,
+    "hierarchy": [2, 2, 2,2],
+    "distance": [1, 200, 350,500],
+    "l": 2,
     "imbalance": 0.03,
     "n_threads": 1,
     "seed": 0,

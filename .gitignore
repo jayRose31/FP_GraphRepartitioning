@@ -36,3 +36,9 @@ experiments/graphLSExperiments/*.txt
 experiments/graphLSExperiments/Graph_metis
 experiments/graphLSExperiments/Graph_partition
 experiments/graphLSExperiments/out_graph
+experiments/graphRFSExperiments/Graph_metis
+experiments/graphRFSExperiments/Graph_metis
+experiments/graphRFSExperiments/Graph_partition
+experiments/exp_supercomputer/notes.txt
+experiments/graphRFSExperiments/Graph_metis
+experiments/graphRFSExperiments/Graph_partition

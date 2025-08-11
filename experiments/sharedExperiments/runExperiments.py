@@ -255,14 +255,15 @@ def test_all_graphs():
     results = {}  # Dictionary für die Ergebnisse
     
     count = 0
-    
+    graph_files = [file for file in graph_files if "dewiki_clean.seq" not in file]
     for graph_file in graph_files:
-        if count > 1:
-            break
-        
-        count += 1
+
+
         
         graph_name = os.path.basename(graph_file)  # Extrahiere den Namen des Graphen
+        print(f"Processing graph: {graph_name}, Count: {count}")
+        
+        count += 1
         results[graph_name] = {
             "RFS": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
             "RFS_multilevel": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
@@ -277,7 +278,7 @@ def test_all_graphs():
         args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100"]
         
         # Führe 5 Runs für jeden Algorithmus aus
-        for _ in range(5):
+        for _ in range(1):
             # RFS Experiment
             repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS)
             results[graph_name]["RFS"]["repartitioning_time"].append(repartitioning_time)

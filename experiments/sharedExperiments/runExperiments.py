@@ -248,19 +248,26 @@ def compare_algorithms():
 # TODO pick good update stepsize: right now i only test with repartitioning after 100 steps
 #? Mit mehreren verschieden stepsizes experimente machen? Wie plotte ich das dann?
 def test_all_graphs():
-    # Pfad zu den Graphen
-    graph_folder = os.path.join(BASE_DIR, "../../res/final_real_dyn")
-    graph_files = glob.glob(os.path.join(graph_folder, "*.seq"))  # Alle Graph-Dateien mit der Endung .seq
         
     results = {}  # Dictionary für die Ergebnisse
     
+    output_file = os.path.join(BASE_DIR, "experiment_results.json")
     count = 0
-    graph_files = [file for file in graph_files if "dewiki_clean.seq" not in file]
-    for graph_file in graph_files:
+    
 
+    
+    
+    graph_names = ["haggle.seq", "dnc-temporalGraph.seq", "sociopatterns-infections.seq",
+                   "munmun_digg.seq", "topology.seq", "facebook-wosn-wall.seq", 
+                   "movielens10m.seq", "lkml-reply.seq" , "proper_loans.seq", 
+                   "wiki_simple_en.seq", "lastfm_band.seq", "stackexchange-stackoverflow.seq",
+                   "citeulike_ui.seq",  "wikipedia-growth.seq",
+                    "dewiki_clean.seq", "amazon-ratings.seq", "flickr-growth.seq" , "youtube-u-growth.seq"
+                   ]
+    
+    
+    for graph_name in graph_names:
 
-        
-        graph_name = os.path.basename(graph_file)  # Extrahiere den Namen des Graphen
         print(f"Processing graph: {graph_name}, Count: {count}")
         
         count += 1
@@ -274,11 +281,31 @@ def test_all_graphs():
         graph_string = f"./res/final_real_dyn/{graph_name}"
         
         # Argumente für die Experimente
-        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100"]
-        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100"]
+        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1"]
+        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1"]
         
         # Führe 5 Runs für jeden Algorithmus aus
-        for _ in range(1):
+        #! Füge mehr prints hinzu
+        for iteration in range(5):
+            
+            if iteration == 1:
+                args_RFS[3] = "0"
+                args_LS[3] = "0"
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment2.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment2.json"
+            elif iteration == 2:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment3.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment3.json"
+            elif iteration == 3:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment4.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment4.json"
+            elif iteration == 4:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment5.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment5.json"
+            else:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment1.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment1.json"
+            
             # RFS Experiment
             repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS)
             results[graph_name]["RFS"]["repartitioning_time"].append(repartitioning_time)
@@ -296,11 +323,10 @@ def test_all_graphs():
             results[graph_name]["LS"]["communication_cost"].append(communication_cost)
             results[graph_name]["LS"]["migration_cost"].append(migration_cost)
     
-    # Speichere die Ergebnisse in einer JSON-Datei
-    output_file = os.path.join(BASE_DIR, "experiment_results.json")
-    with open(output_file, "w") as json_file:
-        json.dump(results, json_file, indent=4)
     
+        with open(output_file, "w") as json_file:
+            json.dump(results, json_file, indent=4)
+        
     print(f"Results saved to {output_file}")
 
 

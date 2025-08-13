@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
     //------------------------------- init ------------------------------------------
 
     // Check if the correct number of arguments is provided
-    if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates>" << std::endl;
+    if (argc != 5) {
+        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates> <bool: new graph?" << std::endl;
         return 1;
     }
 
@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
     std::string configFile_temp = argv[1];  
     std::string graphFilename_temp = argv[2];   
     int numberOfUpdates = std::stoi(argv[3]);
-    
+    int new_graph = std::stoi(argv[4]);
+
     std::filesystem::path configFile = executable_path / ".." / configFile_temp;
     std::filesystem::path graphFilename = executable_path / ".." / graphFilename_temp;
 
@@ -80,6 +81,7 @@ int main(int argc, char* argv[]) {
     
     g.partitionWithSharedMap(configFile);
     
+    //TODO: change methodology -> we want relative updates!
     for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
@@ -121,8 +123,12 @@ int main(int argc, char* argv[]) {
     // std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_partition";
     // std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/out_graph" ;
     
+    //TODO: Hier kann ich arbeit einsparen! Muss nicht immer den Graphen schreiben!
     GraphIo io;
-    io.writeGraphToFileMetis(graph_metis_path, g);
+    if(new_graph == 1) {
+        io.writeGraphToFileMetis(graph_metis_path, g);
+    }
+    //! Hier kann ich KEINE Arbeit einsparen, ich muss immer die neue Partition bereitstellen
     io.writePartitionToFile(graph_partition_path, g);
 
     analyzer_tool <<  graph_metis_path.string() << std::endl;

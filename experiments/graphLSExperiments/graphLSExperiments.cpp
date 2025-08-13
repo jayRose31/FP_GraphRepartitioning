@@ -17,8 +17,8 @@ int main(int argc, char* argv[]) {
     //------------------------------- init ------------------------------------------
 
     // Check if the correct number of arguments is provided
-    if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates> <bool: new graph?> " << std::endl;
+    if (argc != 6) {
+        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates> <bool: new graph?> <update type>" << std::endl;
         return 1;
     }
 
@@ -36,7 +36,9 @@ int main(int argc, char* argv[]) {
     std::string graphFilename_temp = argv[2];   
     int numberOfUpdates = std::stoi(argv[3]);
     int new_graph = std::stoi(argv[4]);
-    
+    int experiment_configuration = std::stoi(argv[5]);
+
+
     std::filesystem::path configFile = executable_path / ".." / configFile_temp;
     std::filesystem::path graphFilename = executable_path / ".." / graphFilename_temp;
 
@@ -78,6 +80,28 @@ int main(int argc, char* argv[]) {
 
     
     g.determine_initial_partition(configFile);
+    
+    // Standardmäßig ist numberOfUpdates einfach die Zahl die man angibt,
+    // aber man kann auch eine der folgenden configartionen benutzen:
+
+    if(experiment_configuration == 1) 
+    {
+        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 1/4;
+
+    } else if (experiment_configuration == 2)
+    {
+        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 2/4;
+
+    } else if (experiment_configuration == 3)
+    {
+        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 3/4;
+
+    }else if (experiment_configuration == 4)
+    {
+        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 ;
+
+    }
+
     
     for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);

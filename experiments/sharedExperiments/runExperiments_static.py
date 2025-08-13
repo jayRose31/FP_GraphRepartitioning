@@ -247,22 +247,19 @@ def compare_algorithms():
 # TODO pick correct config for sharedMap
 # TODO pick good update stepsize: right now i only test with repartitioning after 100 steps
 #? Mit mehreren verschieden stepsizes experimente machen? Wie plotte ich das dann?
-def test_all_graphs():
+def test_all_static_graphs():
         
     results = {}  # Dictionary für die Ergebnisse
     
-    output_file = os.path.join(BASE_DIR, "experiment_results.json")
+    output_file = os.path.join(BASE_DIR, "experiment_results_static.json")
     count = 0
     
 
     
     
-    graph_names = ["haggle.seq", "dnc-temporalGraph.seq", "sociopatterns-infections.seq",
-                   "munmun_digg.seq", "topology.seq", "facebook-wosn-wall.seq", 
-                   "movielens10m.seq", "lkml-reply.seq" , "proper_loans.seq", 
-                   "wiki_simple_en.seq", "lastfm_band.seq", "stackexchange-stackoverflow.seq",
-                   "citeulike_ui.seq",  "wikipedia-growth.seq",
-                    "dewiki_clean.seq", "amazon-ratings.seq", "flickr-growth.seq" , "youtube-u-growth.seq"
+    graph_names = ["144_formatted.seq", "589a_formatted.seq", "as-skitter_formatted.seq",
+                   "citationCitesee_formatted.seq", "fe_ocean_formatted.seq",
+                   "web-Google_formatted.seq"
                    ]
     
     
@@ -278,11 +275,11 @@ def test_all_graphs():
         }
         
         # Erstelle den String im gewünschten Format
-        graph_string = f"./res/final_real_dyn/{graph_name}"
+        graph_string = f"./res/static_test_graphs/{graph_name}"
         
         # Argumente für die Experimente
-        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", "2" ]
-        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1",  "2" ]
+        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", "2"]
+        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", "2"]
         
         # Führe 5 Runs für jeden Algorithmus aus
         #! Füge mehr prints hinzu
@@ -330,4 +327,4 @@ def test_all_graphs():
     print(f"Results saved to {output_file}")
 
 
-test_all_graphs()
+test_all_static_graphs()

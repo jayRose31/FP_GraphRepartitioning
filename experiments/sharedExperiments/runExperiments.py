@@ -244,26 +244,33 @@ def compare_algorithms():
     print(migration_costs_LS)
 
 
-# TODO pick correct config for sharedMap
-# TODO pick good update stepsize: right now i only test with repartitioning after 100 steps
-#? Mit mehreren verschieden stepsizes experimente machen? Wie plotte ich das dann?
-def test_all_graphs():
+def test_all_static_graphs(size, output_file_name = "", experiment_config = "0"):
         
     results = {}  # Dictionary für die Ergebnisse
     
-    output_file = os.path.join(BASE_DIR, "experiment_results.json")
+    output_file = os.path.join(BASE_DIR, output_file_name)
+    if output_file_name == "":
+        output_file = os.path.join(BASE_DIR, "experiment_results_static.json")
+        
     count = 0
     
 
+    graph_names = [""]
     
-    
-    graph_names = ["haggle.seq", "dnc-temporalGraph.seq", "sociopatterns-infections.seq",
-                   "munmun_digg.seq", "topology.seq", "facebook-wosn-wall.seq", 
-                   "movielens10m.seq", "lkml-reply.seq" , "proper_loans.seq", 
-                   "wiki_simple_en.seq", "lastfm_band.seq", "stackexchange-stackoverflow.seq",
-                   "citeulike_ui.seq",  "wikipedia-growth.seq",
-                    "dewiki_clean.seq", "amazon-ratings.seq", "flickr-growth.seq" , "youtube-u-growth.seq"
+    if size == "m":
+        graph_names = [ "144_formatted.seq", "598a_formatted.seq", 
+                   "citationCitesee_formatted.seq", "brack2_formatted.seq",
+                   "enron_formatted.seq", "fe_body_formatted.seq",
+                   "bcsstk29_formatted.seq" , "fe_tooth_formatted.seq" ,
+                   "finan512_formatted.seq", "t60k_formatted.seq",
+                   "wing_formatted.seq", "fe_ocean_formatted.seq"
+                    ]
+    elif size == "l":
+        graph_names = [ "cnr-2000_formatted.seq",
+                   "coAuthorsDBLP_formatted.seq", "as-skitter_formatted.seq",
+                   "web-Google_formatted.seq", "eu-2005_formatted.seq" 
                    ]
+    
     
     
     for graph_name in graph_names:
@@ -278,11 +285,11 @@ def test_all_graphs():
         }
         
         # Erstelle den String im gewünschten Format
-        graph_string = f"./res/final_real_dyn/{graph_name}"
+        graph_string = f"./res/static_test_graphs/{graph_name}"
         
         # Argumente für die Experimente
-        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", "2" ]
-        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1",  "2" ]
+        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", experiment_config]
+        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", experiment_config]
         
         # Führe 5 Runs für jeden Algorithmus aus
         #! Füge mehr prints hinzu
@@ -330,4 +337,102 @@ def test_all_graphs():
     print(f"Results saved to {output_file}")
 
 
-test_all_graphs()
+# TODO pick correct config for sharedMap
+# TODO pick good update stepsize: right now i only test with repartitioning after 100 steps
+#? Mit mehreren verschieden stepsizes experimente machen? Wie plotte ich das dann?
+def test_all_graphs(size , output_file_name = "", experiment_config = "0"):
+        
+    results = {}  # Dictionary für die Ergebnisse
+    
+    output_file = os.path.join(BASE_DIR, output_file_name)
+    if output_file_name == "":
+        output_file = os.path.join(BASE_DIR, "experiment_results.json")
+    
+    count = 0
+    
+
+    graph_names = [""]
+    
+    if size == "m":
+        graph_names = ["haggle.seq", "dnc-temporalGraph.seq", "sociopatterns-infections.seq",
+                   "munmun_digg.seq", "topology.seq", "facebook-wosn-wall.seq", 
+                   "movielens10m.seq", "lkml-reply.seq" , "proper_loans.seq", 
+                   "wiki_simple_en.seq", "lastfm_band.seq", "stackexchange-stackoverflow.seq",
+                   "citeulike_ui.seq"
+                     ]
+    elif size == "l":
+        graph_names = ["wikipedia-growth.seq",
+                    "dewiki_clean.seq", "amazon-ratings.seq", "flickr-growth.seq" , "youtube-u-growth.seq"
+                     ]
+    
+    
+    for graph_name in graph_names:
+
+        print(f"Processing graph: {graph_name}, Count: {count}")
+        
+        count += 1
+        results[graph_name] = {
+            "RFS": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
+            "RFS_multilevel": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []},
+            "LS": {"repartitioning_time": [], "communication_cost": [], "migration_cost": []}
+        }
+        
+        # Erstelle den String im gewünschten Format
+        graph_string = f"./res/final_real_dyn/{graph_name}"
+        
+        # Argumente für die Experimente
+        args_RFS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1", experiment_config ]
+        args_LS = ["./res/sharedMapConfigs/sharedMap_config1.json", graph_string, "100", "1",  experiment_config ]
+        
+        # Führe 5 Runs für jeden Algorithmus aus
+        #! Füge mehr prints hinzu
+        for iteration in range(5):
+            
+            if iteration == 1:
+                args_RFS[3] = "0"
+                args_LS[3] = "0"
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment2.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment2.json"
+            elif iteration == 2:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment3.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment3.json"
+            elif iteration == 3:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment4.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment4.json"
+            elif iteration == 4:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment5.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment5.json"
+            else:
+                args_RFS[0] = "./res/sharedMapConfigs/config_experiment1.json"
+                args_LS[0] = "./res/sharedMapConfigs/config_experiment1.json"
+            
+            # RFS Experiment
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS)
+            results[graph_name]["RFS"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["RFS"]["communication_cost"].append(communication_cost)
+            results[graph_name]["RFS"]["migration_cost"].append(migration_cost)
+            
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_RFS(args_RFS, multilevel=True)
+            results[graph_name]["RFS_multilevel"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["RFS_multilevel"]["communication_cost"].append(communication_cost)
+            results[graph_name]["RFS_multilevel"]["migration_cost"].append(migration_cost)
+            
+            # LS Experiment
+            repartitioning_time, communication_cost, migration_cost = run_single_experiment_LS(args_LS)
+            results[graph_name]["LS"]["repartitioning_time"].append(repartitioning_time)
+            results[graph_name]["LS"]["communication_cost"].append(communication_cost)
+            results[graph_name]["LS"]["migration_cost"].append(migration_cost)
+    
+    
+        with open(output_file, "w") as json_file:
+            json.dump(results, json_file, indent=4)
+        
+    print(f"Results saved to {output_file}")
+
+test_all_static_graphs("m", "med_static_1.json", "1")
+test_all_static_graphs("m", "med_static_2.json", "2")
+test_all_static_graphs("m", "med_static_4.json", "4")
+test_all_graphs("m", "med_dyn_3.json", "3")
+test_all_static_graphs("l", "large_static_2.json", "2")
+test_all_static_graphs("l", "large_static_4.json", "4")
+test_all_graphs("l", "med_dyn_2.json", "2")

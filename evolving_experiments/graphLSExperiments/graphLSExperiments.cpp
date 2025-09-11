@@ -13,38 +13,33 @@
 
 int main(int argc, char* argv[]) {
     
+    std::cerr << "came to base 1" << std::endl;
 
     //------------------------------- init ------------------------------------------
 
     // Check if the correct number of arguments is provided
-    if (argc != 6) {
-        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <number_of_updates> <bool: new graph?> <update type>" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <bool: new graph?>" << std::endl;
         return 1;
     }
 
+    // Get the directory of the executable
     std::filesystem::path executable_path = std::filesystem::path(argv[0]).parent_path();
     
-    std::filesystem::path analyzer_tool_path = executable_path / "../experiments/graphLSExperiments/analyzerTool_temporary.txt";
-    std::filesystem::path graph_metis_path = executable_path / "../experiments/graphLSExperiments/Graph_metis";
-    std::filesystem::path graph_partition_path = executable_path / "../experiments/graphLSExperiments/Graph_partition";
-    std::filesystem::path out_graph_path = executable_path / "../experiments/graphLSExperiments/out_graph";
-    std::filesystem::path results_temp_path = executable_path / "../experiments/graphLSExperiments/results_temporary.txt";
+    
+    std::filesystem::path graph_metis_path = executable_path / "../evolving_experiments/graphLSExperiments/Graph_metis";
+    std::filesystem::path migration_results_path = executable_path / "../evolving_experiments/graphLSExperiments/migration_results.txt";
+    std::filesystem::path time_results_path = executable_path / "../evolving_experiments/graphLSExperiments/time_results.txt";
 
 
     // Read arguments from the command line
     std::string configFile_temp = argv[1];  
     std::string graphFilename_temp = argv[2];   
-    int numberOfUpdates = std::stoi(argv[3]);
-    int new_graph = std::stoi(argv[4]);
-    int experiment_configuration = std::stoi(argv[5]);
-
+    int new_graph = std::stoi(argv[3]);
 
     std::filesystem::path configFile = executable_path / ".." / configFile_temp;
     std::filesystem::path graphFilename = executable_path / ".." / graphFilename_temp;
 
-
-    // Assert that the third argument is a valid integer
-    assert((numberOfUpdates = std::stoi(argv[3])) >= 0 && "Number of updates must be a non-negative integer");
 
 
     std::ifstream file(graphFilename); 
@@ -59,14 +54,16 @@ int main(int argc, char* argv[]) {
 
     std::vector<long> numberNodesAndUpdates = fileUtils::readNumberNodesAndEdgesFromFile(file);
 
+    std::cerr << "came to base 2" << std::endl;
 
 
     // ------------------------------- build graph and partition --------------------------------
     graphLocalSearch g(numberNodesAndUpdates[0]);
+    GraphIo io;
 
 
     // Kanten einlesen
-    for(int i = 0; i < numberNodesAndUpdates[1] *2/ 3 ; i++) {
+    for(int i = 0; i < numberNodesAndUpdates[1] *2.0/ 3 ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {
@@ -78,148 +75,99 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    
+
+    // compute initial partition
     g.determine_initial_partition(configFile);
+
+    std::vector<double> residuals = { 1.0/2, 1.0/4, 1.0/8, 1.0/16, 1.0/32, 1.0/64 };
+    std::vector<double> rep_times = {};
+    std::vector<double> mig_costs = {};
+
+    std::filesystem::path graph_partition_path = executable_path / "../evolving_experiments/graphLSExperiments/Graph_partition";
+    std::vector<std::string> partition_paths = {
+        graph_partition_path.string() + "1", graph_partition_path.string() + "2",
+        graph_partition_path.string() + "3", graph_partition_path.string() + "4",
+        graph_partition_path.string() + "5", graph_partition_path.string() + "6"
+    };
+
+    // do the actual experiments:
+    for (int j = 0; j < residuals.size(); j++) {
     
-    // Standardmäßig ist numberOfUpdates einfach die Zahl die man angibt,
-    // aber man kann auch eine der folgenden configartionen benutzen:
-
-    if(experiment_configuration == 1) 
-    {
-        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 1/4;
-
-    } else if (experiment_configuration == 2)
-    {
-        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 2/4;
-
-    } else if (experiment_configuration == 3)
-    {
-        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 * 3/4;
-
-    }else if (experiment_configuration == 4)
-    {
-        numberOfUpdates = numberNodesAndUpdates[1] * 1/3 ;
-
-    }
-
-    
-    for(int i = 0; i < numberOfUpdates ; i++) {
-        edge = fileUtils::readEdgeInformationFromFile(file);
-        
-        if(edge[0] == 1) {
-            g.add_edge(edge[1], edge[2]);
+        for(int i = 0; i < numberNodesAndUpdates[1] * 1.0/3 * residuals[j] ; i++) {
+            edge = fileUtils::readEdgeInformationFromFile(file);
             
-        } else if(edge[0] == 0) {
-            g.remove_edge(edge[1], edge[2]);
-            
+            if(edge[0] == 1) {
+                g.add_edge(edge[1], edge[2]);
+                
+            } else if(edge[0] == 0) {
+                g.remove_edge(edge[1], edge[2]);
+                
+            }
         }
+    
+
+        // Zeit messen
+        auto start = std::chrono::high_resolution_clock::now(); // Uhr starten
+
+        g.repartition(configFile);
+        
+        auto stop = std::chrono::high_resolution_clock::now(); // Uhr stoppen
+        
+        // Dauer berechnen
+        //auto duration_repartitioning = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::chrono::duration<double> duration_repartitioning = stop - start;
+        
+        rep_times.push_back(duration_repartitioning.count());
+        mig_costs.push_back(g.get_migrationCost());
+
+        io.writePartitionToFile(partition_paths[j], g);
+
+
     }
 
-    // Zeit messen
-    auto start = std::chrono::high_resolution_clock::now(); // Uhr starten
 
-    g.repartition(configFile);
-    
-    auto stop = std::chrono::high_resolution_clock::now(); // Uhr stoppen
-    
-    // Dauer berechnen
-    //auto duration_repartitioning = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    std::chrono::duration<double> duration_repartitioning = stop - start;
 
     // fertig
     file.close();
 
-    
-
-    // ---------- Schreibe Sachen damit ich in python das Tool von Henning benutzen kann ------------
-    // std::string filename = "./experiments/graphLSExperiments/analyzerTool_temporary.txt";
-    std::ofstream analyzer_tool(analyzer_tool_path); 
-    if (!analyzer_tool) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << analyzer_tool_path << std::endl;
-        return 1;
-    }
 
 
-    // std::string graph_metis_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/Graph_metis" ;
-    // std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/Graph_partition";
-    // std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/out_graph" ;
-    
-    GraphIo io;
+
+
+    //TODO: Hier kann ich arbeit einsparen! Muss nicht immer den Graphen schreiben!
     if(new_graph == 1) {
         io.writeGraphToFileMetis(graph_metis_path, g);
     }
-    io.writePartitionToFile(graph_partition_path, g);
 
-    analyzer_tool <<  graph_metis_path.string() << std::endl;
-    analyzer_tool <<  graph_partition_path.string() << std::endl;
-    analyzer_tool <<  out_graph_path.string() << std::endl;
-    
 
-    // Die anderen Paramter holen 
-    // Alles egal außer: hierarchy, distance und epsilon
-    std::vector<int> hierarchy;
-    std::vector<int> distance;
-    int l;
-    float imbalance;
-    int   n_threads;
-    int   seed;
-    shared_map_strategy_type_t  strategy;                    
-    shared_map_algorithm_type_t parallel_alg ;
-    shared_map_algorithm_type_t serial_alg;
-    bool verbose_error;
-    bool verbose_statistics;
+    // ------------------ write migration cost and time ---------------------------
 
-    bool configSucces = fileUtils::readConfigFileSharedMap(configFile, hierarchy, distance, l, imbalance, n_threads, seed, strategy, parallel_alg, serial_alg, verbose_error, verbose_statistics);
 
-    if(!configSucces) {
-        std::cerr << "Error reading config file. Exiting." << std::endl;
+    std::ofstream migration_res(migration_results_path); 
+    if (!migration_res) {
+        std::cerr << "Fehler beim Öffnen der Datei: " << migration_results_path << std::endl;
+        return 1;
+    }
+
+    std::ofstream time_res(time_results_path); 
+    if (!time_res) {
+        std::cerr << "Fehler beim Öffnen der Datei: " << time_results_path << std::endl;
         return 1;
     }
 
 
-    for (size_t i = 0; i < hierarchy.size(); ++i) {
-        analyzer_tool << hierarchy[i];
-        if (i < hierarchy.size() - 1) {
-            analyzer_tool << ":";
-        }
-    }
-    analyzer_tool << std::endl;
 
-
-    for (size_t i = 0; i < distance.size(); ++i) {
-        analyzer_tool << distance[i];
-        if (i < distance.size() - 1) {
-            analyzer_tool << ":";
-        }
-    }
-    analyzer_tool << std::endl; 
-
-    analyzer_tool << imbalance << std::endl;
-
-    analyzer_tool.close();
-
-    // ---------------------------------------- pass remaining data to python script--------------------------------------------
-
-
-
-    // Datei öffnen zum schreiben der Ergebnisse
-    // filename = "./experiments/graphLSExperiments/results_temporary.txt";
-    std::ofstream res_temp(results_temp_path); 
-    if (!res_temp) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << results_temp_path << std::endl;
-        return 1;
+    for (const auto& time : rep_times) {
+        time_res << time << std::endl;
     }
 
-    // Ergebnisse schreiben
-    // 1. Zeit zum repartitionieren in sekunden
-    double duration_in_seconds = duration_repartitioning.count() /*  / 1000.0  */;
-    res_temp << duration_in_seconds << std::endl;
-
-    //2. migration cost: what percent of nodes changed partition
-    res_temp << g.get_migrationCost() << std::endl;
+    for(const auto& migr_cost : mig_costs ) {
+        migration_res << migr_cost << std::endl;
+    } 
 
     
-    res_temp.close();
+    migration_res.close();
+    time_res.close();
 
 
     //--------------------------------- ----------------- done ------------------------------------------------------

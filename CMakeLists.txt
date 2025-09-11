@@ -47,6 +47,8 @@ add_executable(graphLSExp experiments/graphLSExperiments/graphLSExperiments.cpp 
 
 # add to remote server
 add_executable(graphRFS_evolving  evolving_experiments/graphRFSExperiments/graphRFSExperiments.cpp ${SOURCES})
+add_executable(graphRFSMultilevel_evolving  evolving_experiments/graphRFSExperiments/graphRFSMultilevelExperiments.cpp ${SOURCES})
+add_executable(graphLS_evolving  evolving_experiments/graphLSExperiments/graphLSExperiments.cpp ${SOURCES})
 
 if(TARGET nlohmann_json::nlohmann_json)
     # Paket gefunden → offizielles Target nutzen
@@ -65,4 +67,6 @@ target_link_libraries(graphLSExp sharedmap ${NLOHMANN_TARGET})
 
 # add to remote server
 target_link_libraries(graphRFS_evolving sharedmap ${NLOHMANN_TARGET})
+target_link_libraries(graphRFSMultilevel_evolving sharedmap ${NLOHMANN_TARGET})
+target_link_libraries(graphLS_evolving sharedmap ${NLOHMANN_TARGET})
 

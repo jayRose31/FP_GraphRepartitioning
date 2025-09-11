@@ -19,7 +19,9 @@ def determine_comm_cost(type = "RFS"):
     hierarchy = configdata["hierarchy"] 
     distance = configdata["distance"]
     epsilon = configdata["imbalance"]
-        
+    
+    hierarchy_str = ":".join(map(str, hierarchy))
+    distance_str = ":".join(map(str, distance))
 
     base_partition_path = ""
 
@@ -44,10 +46,19 @@ def determine_comm_cost(type = "RFS"):
     for i in range(number_experiments):
         
         # Jetzt benutze ich das tool vom Henning. Abfahrt!
-        partition_path = os.path.join(base_partition_path, str(i+1) )
+        partition_path = base_partition_path + str(i+1) 
         
-        command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
+        # die file am out_path muss ich noch erstellen.
+        with open(out_path, "w"):
+            pass
+        
+        
+        command = [executable_path, graph_path, partition_path, hierarchy_str, distance_str, str(epsilon), out_path]
+        
         result = subprocess.run(command, capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print(f"Error running {executable_path}: {result.stderr}")
 
         # Dann lese ich die communication cost aus der Datei aus
         with open(out_path, "r") as file:
@@ -65,6 +76,24 @@ def determine_comm_cost(type = "RFS"):
 
     
 
+
+
+costs = determine_comm_cost()
+print(costs)
+
+# read the file and extract the values
+def determine_migration_cost():
+    return 1
+
+
+
+def determine_rep_time():
+    return 1
+
+
+#TODO: function to put it all together
+
+#TODO: cleanup function?
 
 
 def run_single_experiment_RFS(args, multilevel=False):
@@ -492,10 +521,3 @@ def test_all_graphs(size , output_file_name = "", experiment_config = "0"):
         
     print(f"Results saved to {output_file}")
 
-#test_all_static_graphs("m", "med_static_1.json", "1")
-#test_all_static_graphs("m", "med_static_2.json", "2")
-#test_all_static_graphs("m", "med_static_4.json", "4")
-#test_all_graphs("m", "med_dyn_3.json", "3")
-#test_all_static_graphs("l", "large_static_2.json", "2")
-#test_all_static_graphs("l", "large_static_4.json", "4")
-test_all_graphs("l", "med_dyn_2.json", "2")

@@ -76,6 +76,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+
+    // compute initial partition
+    g.partitionWithSharedMap(configFile);
+
     std::vector<double> residuals = { 1.0/2, 1.0/4, 1.0/8, 1.0/16, 1.0/32, 1.0/64 };
     std::vector<double> rep_times = {};
     std::vector<double> mig_costs = {};

@@ -74,46 +74,90 @@ def determine_comm_cost(type = "RFS"):
     
     return comm_costs
 
-    
+
+def determine_migration_cost(type="RFS"):
+
+    file_path = ""
+
+    if type == "RFS":
+        # path for RFS
+        file_path = os.path.join(BASE_DIR, "../graphRFSExperiments/migration_results.txt")
+    if type == "LS":
+        # path for LS
+        file_path = os.path.join(BASE_DIR, "../graphLSExperiments/migration_results.txt")
+
+    with open(file_path, "r") as file:
+        results = [float(line.strip()) for line in file.readlines()]
+    return results
+
+
+def determine_rep_time(type="RFS"):
+
+    file_path = ""
+
+    if type == "RFS":
+        # path for RFS
+        file_path = os.path.join(BASE_DIR, "../graphRFSExperiments/time_results.txt")
+    if type == "LS":
+        # path for LS
+        file_path = os.path.join(BASE_DIR, "../graphLSExperiments/time_results.txt")
+
+    with open(file_path, "r") as file:
+        results = [float(line.strip()) for line in file.readlines()]
+    return results
 
 
 
-costs = determine_comm_cost()
-print(costs)
-
-# read the file and extract the values
-def determine_migration_cost():
-    return 1
-
-
-
-def determine_rep_time():
-    return 1
 
 
 #TODO: function to put it all together
 
 #TODO: cleanup function?
+def clean_up(type="RFS"):
+
+    base_path = ""
+
+    if type == "RFS":
+        # path for RFS
+        base_path = os.path.join(BASE_DIR, "../graphRFSExperiments/")
+    if type == "LS":
+        # path for LS
+        base_path = os.path.join(BASE_DIR, "../graphLSExperiments/")
+    
+    #? delete the graph metis file?
+    #! a bit dangerous because we need it over multiple runs...
+    
+    number_experiments = 6
+    
+    for i in range(number_experiments):
+        partition_path = base_path + "Graph_partition" + str(i+1) 
+        if os.path.exists(partition_path):
+            os.remove(partition_path)
+    
+    if os.path.exists(base_path + "migration_results.txt"):
+        os.remove(base_path + "migration_results.txt")
+    
+    if os.path.exists(base_path + "time_results.txt"):
+        os.remove(base_path + "time_results.txt")
+    
+    
+    return
 
 
+clean_up()
+
+
+# this now just executes the programm
+# use determine functions to get values
 def run_single_experiment_RFS(args, multilevel=False):
     
-    # create files
-    res_temp = os.path.join(BASE_DIR, "../graphRFSExperiments/results_temporary.txt")
-    with open(res_temp, "w"):
-        pass
-
-    analyzer_tool = os.path.join(BASE_DIR, "../graphRFSExperiments/analyzerTool_temporary.txt")
-    with open(analyzer_tool, "w"):
-        pass
-
     cpp_executable = ""
     
     # run the program
     if multilevel:
-        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSMultilevelExp")
+        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSMultilevelExp_evolving")
     else:
-        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSExp")
+        cpp_executable = os.path.join(BASE_DIR, "../../build/graphRFSExp_evolving")
     
     result = subprocess.run([cpp_executable] + args, capture_output=True, text=True)
 
@@ -121,63 +165,8 @@ def run_single_experiment_RFS(args, multilevel=False):
     if result.stderr:
         print("Program Errors:")
         print(result.stderr)
-    
-    
-    # read file and save the results
-    with open(res_temp, "r") as file:
-        repartitioning_time_str = file.readline().strip()
-        baseline_cost_str = file.readline().strip()
-        baseline_speed_str = file.readline().strip()
-        migration_cost_str = file.readline().strip()
-    
-    print(baseline_cost_str)
-    
-    repartitioning_time = (float)(repartitioning_time_str)
-    migration_cost = (float)(migration_cost_str)
-    
         
-    # ----------------- Benutze tool von Henning (analyzer) -----------------
-    with open(analyzer_tool, "r") as file:
-        graph_path = file.readline().strip()
-        partition_path = file.readline().strip()
-        out_path = file.readline().strip()
-        hierarchy = file.readline().strip()
-        distance = file.readline().strip()
-        epsilon = file.readline().strip()
-        
-    # die file am out_path muss ich noch erstellen.
-    with open(out_path, "w"):
-        pass
-         
-    
-    # Jetzt benutze ich das tool vom Henning. Abfahrt!
-    executable_path = os.path.join(BASE_DIR, "../../third_party/ProcessMappingAnalyzer/build/processmappinganalyzer")
-    command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
-    result = subprocess.run(command, capture_output=True, text=True)
-
-    # Dann lese ich die communication cost aus der Datei aus
-    with open(out_path, "r") as file:
-        data = json.load(file)
-
-    communication_cost = data["comm_cost"]
-
-    #? optional: lösche alle erstellten Dateien (graph_path, partition_path, out_path)
-
-    # ----------------------- done --------------------------------------------
-
-    # delete the file
-    if os.path.exists(res_temp):
-        os.remove(res_temp)
-    else:
-        print("The file does not exist, for some reason...")
-        
-    if os.path.exists(analyzer_tool):
-        os.remove(analyzer_tool)
-    else:
-        print("The file does not exist, for some reason...")
-        
-        
-    return repartitioning_time, communication_cost, migration_cost
+    return 
 
 
 

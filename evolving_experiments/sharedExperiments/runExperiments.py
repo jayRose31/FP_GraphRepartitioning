@@ -8,6 +8,64 @@ import glob
 
 BASE_DIR = os.path.dirname(__file__)
 
+# get the communication cost for all the 6 partitions
+def determine_comm_cost(type = "RFS"):
+
+    config_path = os.path.join(BASE_DIR, "../../res/sharedMapConfigs/config_experiment1.json")
+
+    with open(config_path, "r") as file1:
+        configdata = json.load(file1)
+    
+    hierarchy = configdata["hierarchy"] 
+    distance = configdata["distance"]
+    epsilon = configdata["imbalance"]
+        
+
+    base_partition_path = ""
+
+    if type == "RFS":
+        # path for RFS
+        base_partition_path = os.path.join(BASE_DIR, "../graphRFSExperiments/Graph_partition")
+    if type == "LS":
+        # path for LS
+        base_partition_path = os.path.join(BASE_DIR, "../graphLSExperiments/Graph_partition")
+    
+    
+    
+    graph_path = os.path.join(BASE_DIR, "../graphRFSExperiments/Graph_metis")
+    out_path = os.path.join(BASE_DIR, "../graphRFSExperiments/out_graph")
+    executable_path = os.path.join(BASE_DIR, "../../third_party/ProcessMappingAnalyzer/build/processmappinganalyzer")
+    
+    
+    comm_costs = []
+    number_experiments = 6
+    
+    
+    for i in range(number_experiments):
+        
+        # Jetzt benutze ich das tool vom Henning. Abfahrt!
+        partition_path = os.path.join(base_partition_path, str(i+1) )
+        
+        command = [executable_path, graph_path, partition_path, hierarchy, distance, epsilon, out_path]
+        result = subprocess.run(command, capture_output=True, text=True)
+
+        # Dann lese ich die communication cost aus der Datei aus
+        with open(out_path, "r") as file:
+            data = json.load(file)
+
+        communication_cost = data["comm_cost"]
+        comm_costs.append(communication_cost)
+        
+        #? maybe delete the out_path just for to be safe 
+        if os.path.exists(out_path):
+            os.remove(out_path)
+            
+    
+    return comm_costs
+
+    
+
+
 
 def run_single_experiment_RFS(args, multilevel=False):
     
@@ -388,7 +446,7 @@ def test_all_graphs(size , output_file_name = "", experiment_config = "0"):
         
         # Führe 5 Runs für jeden Algorithmus aus
         #! Füge mehr prints hinzu
-        for iteration in range(5):
+        for iteration in range(1):
             
             if iteration == 1:
                 args_RFS[3] = "0"

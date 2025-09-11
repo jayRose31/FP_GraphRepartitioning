@@ -7,14 +7,12 @@
 #include <filesystem>
 
 #include "../../include/graph.hh"
-#include "../../include/graphRFS.hh"
-#include "../../include/graphRFSMultilevel.hh"
+#include "../../include/graphLocalSearch.hh"
 #include "../../include/graph_io.hh"
 #include "../../include/fileUtils.hh"
 
 int main(int argc, char* argv[]) {
     
-    std::cerr << "came to base 1" << std::endl;
 
     //------------------------------- init ------------------------------------------
 
@@ -24,14 +22,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Get the directory of the executable
     std::filesystem::path executable_path = std::filesystem::path(argv[0]).parent_path();
     
-    std::filesystem::path analyzer_tool_path = executable_path / "../experiments/graphRFSExperiments/analyzerTool_temporary.txt";
-    std::filesystem::path graph_metis_path = executable_path / "../experiments/graphRFSExperiments/Graph_metis";
-    std::filesystem::path graph_partition_path = executable_path / "../experiments/graphRFSExperiments/Graph_partition";
-    std::filesystem::path out_graph_path = executable_path / "../experiments/graphRFSExperiments/out_graph";
-    std::filesystem::path results_temp_path = executable_path / "../experiments/graphRFSExperiments/results_temporary.txt";
+    std::filesystem::path analyzer_tool_path = executable_path / "../experiments/graphLSExperiments/analyzerTool_temporary.txt";
+    std::filesystem::path graph_metis_path = executable_path / "../experiments/graphLSExperiments/Graph_metis";
+    std::filesystem::path graph_partition_path = executable_path / "../experiments/graphLSExperiments/Graph_partition";
+    std::filesystem::path out_graph_path = executable_path / "../experiments/graphLSExperiments/out_graph";
+    std::filesystem::path results_temp_path = executable_path / "../experiments/graphLSExperiments/results_temporary.txt";
 
 
     // Read arguments from the command line
@@ -62,11 +59,10 @@ int main(int argc, char* argv[]) {
 
     std::vector<long> numberNodesAndUpdates = fileUtils::readNumberNodesAndEdgesFromFile(file);
 
-    std::cerr << "came to base 2" << std::endl;
 
 
     // ------------------------------- build graph and partition --------------------------------
-    graphRFS g(numberNodesAndUpdates[0]);
+    graphLocalSearch g(numberNodesAndUpdates[0]);
 
 
     // Kanten einlesen
@@ -82,10 +78,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    std::cerr << "came to base 3" << std::endl;  
-    g.partitionWithSharedMap(configFile);
     
-    std::cerr << "came to base 4" << std::endl;
+    g.determine_initial_partition(configFile);
+    
     // Standardmäßig ist numberOfUpdates einfach die Zahl die man angibt,
     // aber man kann auch eine der folgenden configartionen benutzen:
 
@@ -107,6 +102,7 @@ int main(int argc, char* argv[]) {
 
     }
 
+    
     for(int i = 0; i < numberOfUpdates ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
@@ -118,8 +114,7 @@ int main(int argc, char* argv[]) {
             
         }
     }
-    std::cerr << "came to base 5" << std::endl;
-  
+
     // Zeit messen
     auto start = std::chrono::high_resolution_clock::now(); // Uhr starten
 
@@ -137,7 +132,7 @@ int main(int argc, char* argv[]) {
     
 
     // ---------- Schreibe Sachen damit ich in python das Tool von Henning benutzen kann ------------
-    //std::string filename = "./experiments/graphRFSExperiments/analyzerTool_temporary.txt";
+    // std::string filename = "./experiments/graphLSExperiments/analyzerTool_temporary.txt";
     std::ofstream analyzer_tool(analyzer_tool_path); 
     if (!analyzer_tool) {
         std::cerr << "Fehler beim Öffnen der Datei: " << analyzer_tool_path << std::endl;
@@ -145,16 +140,14 @@ int main(int argc, char* argv[]) {
     }
 
 
-    // std::string graph_metis_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_metis" ;
-    // std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/Graph_partition";
-    // std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphRFSExperiments/out_graph" ;
+    // std::string graph_metis_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/Graph_metis" ;
+    // std::string graph_partition_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/Graph_partition";
+    // std::string out_graph_filename = "/home/jacob/Dokumente/AldaPraktikum/Code/experiments/graphLSExperiments/out_graph" ;
     
-    //TODO: Hier kann ich arbeit einsparen! Muss nicht immer den Graphen schreiben!
     GraphIo io;
     if(new_graph == 1) {
         io.writeGraphToFileMetis(graph_metis_path, g);
     }
-    //! Hier kann ich KEINE Arbeit einsparen, ich muss immer die neue Partition bereitstellen
     io.writePartitionToFile(graph_partition_path, g);
 
     analyzer_tool <<  graph_metis_path.string() << std::endl;
@@ -210,7 +203,7 @@ int main(int argc, char* argv[]) {
 
 
     // Datei öffnen zum schreiben der Ergebnisse
-    // filename = "./experiments/graphRFSExperiments/results_temporary.txt";
+    // filename = "./experiments/graphLSExperiments/results_temporary.txt";
     std::ofstream res_temp(results_temp_path); 
     if (!res_temp) {
         std::cerr << "Fehler beim Öffnen der Datei: " << results_temp_path << std::endl;
@@ -222,16 +215,8 @@ int main(int argc, char* argv[]) {
     double duration_in_seconds = duration_repartitioning.count() /*  / 1000.0  */;
     res_temp << duration_in_seconds << std::endl;
 
-    // 2. Baseline value communication cost
-    res_temp << g.get_baseline_comm_cost() <<std::endl;
-
-    // 3. Zeit die sharedMap allein gebraucht hat:
-    res_temp << g.get_baseline_speed() << std::endl;
-
-    //4. migration cost: what percent of nodes changed partition
+    //2. migration cost: what percent of nodes changed partition
     res_temp << g.get_migrationCost() << std::endl;
-
-    
 
     
     res_temp.close();

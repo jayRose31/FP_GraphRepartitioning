@@ -170,9 +170,10 @@ void graphRFS::repartition(std::string configFile) {
     std::vector<long> old_partition = this->partition;
    
     auto start = std::chrono::high_resolution_clock::now();
+    std::cerr << "base 6" <<  std::endl ;
 
     this->comm_cost_sharedMap = this->partitionWithSharedMap(configFile);
-    
+    std::cerr << "base 7" <<  std::endl ;
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
  

@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     
 
     // Kanten einlesen
-    for(int i = 0; i < numberNodesAndUpdates[1] *2.0/ 3 ; i++) {
+    for(int i = 0; i < numberNodesAndUpdates[1] * 2.0/ 3 ; i++) {
         edge = fileUtils::readEdgeInformationFromFile(file);
         
         if(edge[0] == 1) {

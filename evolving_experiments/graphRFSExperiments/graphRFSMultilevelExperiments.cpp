@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
     //------------------------------- init ------------------------------------------
 
     // Check if the correct number of arguments is provided
-    if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <configFile> <filename> <bool: new graph?>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <configFile> <filename>" << std::endl;
         return 1;
     }
 
@@ -28,7 +28,6 @@ int main(int argc, char* argv[]) {
     std::filesystem::path executable_path = std::filesystem::path(argv[0]).parent_path();
     
     
-    std::filesystem::path graph_metis_path = executable_path / "../evolving_experiments/graphRFSExperiments/Graph_metis";
     std::filesystem::path migration_results_path = executable_path / "../evolving_experiments/graphRFSExperiments/migration_results.txt";
     std::filesystem::path time_results_path = executable_path / "../evolving_experiments/graphRFSExperiments/time_results.txt";
 
@@ -36,7 +35,6 @@ int main(int argc, char* argv[]) {
     // Read arguments from the command line
     std::string configFile_temp = argv[1];  
     std::string graphFilename_temp = argv[2];   
-    int new_graph = std::stoi(argv[3]);
 
     std::filesystem::path configFile = executable_path / ".." / configFile_temp;
     std::filesystem::path graphFilename = executable_path / ".." / graphFilename_temp;
@@ -91,6 +89,14 @@ int main(int argc, char* argv[]) {
         graph_partition_path.string() + "5", graph_partition_path.string() + "6"
     };
 
+    std::filesystem::path graph_metis_path = executable_path / "../evolving_experiments/graphRFSExperiments/Graph_metis";
+    std::vector<std::string> graph_metis_paths = {
+        graph_metis_path.string() + "1", graph_metis_path.string() + "2",
+        graph_metis_path.string() + "3", graph_metis_path.string() + "4",
+        graph_metis_path.string() + "5", graph_metis_path.string() + "6"
+
+    };
+
     // do the actual experiments:
     for (int j = 0; j < residuals.size(); j++) {
     
@@ -122,6 +128,7 @@ int main(int argc, char* argv[]) {
         mig_costs.push_back(g.get_migrationCost());
 
         io.writePartitionToFile(partition_paths[j], g);
+        io.writeGraphToFileMetis(graph_metis_paths[j], g);
 
 
     }
@@ -130,15 +137,6 @@ int main(int argc, char* argv[]) {
 
     // fertig
     file.close();
-
-
-
-
-
-    //TODO: Hier kann ich arbeit einsparen! Muss nicht immer den Graphen schreiben!
-    if(new_graph == 1) {
-        io.writeGraphToFileMetis(graph_metis_path, g);
-    }
 
 
     // ------------------ write migration cost and time ---------------------------

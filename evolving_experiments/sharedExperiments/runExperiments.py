@@ -407,9 +407,14 @@ def test_all_graphs(size , output_file_name = ""):
     print(f"Results saved to {output_file}")
 
 
-args = ["./res/sharedMapConfigs/config_experiment1.json", "./res/final_real_dyn/topology.seq" ]
-run_single_experiment_RFS(args)
-costs = determine_comm_cost()
-print(costs)
-clean_up()
-#test_all_static_graphs("m", "testrun.json")
+
+test_all_static_graphs("m", "testrun.json")
+
+#args = ["./res/sharedMapConfigs/config_experiment1.json", "./res/static_test_graphs/144_formatted.seq" ]
+#run_single_experiment_RFS(args, multilevel=True)
+#run_single_experiment_LS(args)
+#costs = determine_comm_cost()
+#costs = determine_comm_cost("LS")
+#print(costs)
+#clean_up()
+#clean_up("LS")

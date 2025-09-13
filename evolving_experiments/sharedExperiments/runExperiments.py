@@ -24,19 +24,19 @@ def determine_comm_cost(type = "RFS"):
     distance_str = ":".join(map(str, distance))
 
     base_partition_path = ""
-    graph_path = ""
+    base_graph_path = ""
     out_path = ""
 
     if type == "RFS":
         # path for RFS
         base_partition_path = os.path.join(BASE_DIR, "../graphRFSExperiments/Graph_partition")
-        graph_path = os.path.join(BASE_DIR, "../graphRFSExperiments/Graph_metis")
+        base_graph_path = os.path.join(BASE_DIR, "../graphRFSExperiments/Graph_metis")
         out_path = os.path.join(BASE_DIR, "../graphRFSExperiments/out_graph")
     
     if type == "LS":
         # path for LS
         base_partition_path = os.path.join(BASE_DIR, "../graphLSExperiments/Graph_partition")
-        graph_path = os.path.join(BASE_DIR, "../graphLSExperiments/Graph_metis")
+        base_graph_path = os.path.join(BASE_DIR, "../graphLSExperiments/Graph_metis")
         out_path = os.path.join(BASE_DIR, "../graphLSExperiments/out_graph")
     
     
@@ -52,6 +52,7 @@ def determine_comm_cost(type = "RFS"):
         
         # Jetzt benutze ich das tool vom Henning. Abfahrt!
         partition_path = base_partition_path + str(i+1) 
+        graph_path = base_graph_path + str(i+1)
         
         # die file am out_path muss ich noch erstellen.
         with open(out_path, "w"):
@@ -71,6 +72,7 @@ def determine_comm_cost(type = "RFS"):
 
         communication_cost = data["comm_cost"]
         comm_costs.append(communication_cost)
+        
         
         #? maybe delete the out_path just to be safe 
         if os.path.exists(out_path):
@@ -133,6 +135,12 @@ def clean_up(type="RFS"):
         partition_path = base_path + "Graph_partition" + str(i+1) 
         if os.path.exists(partition_path):
             os.remove(partition_path)
+    
+    for i in range(number_experiments):
+        graph_path = base_path + "Graph_metis" + str(i+1) 
+        if os.path.exists(graph_path):
+            os.remove(graph_path)
+    
     
     if os.path.exists(base_path + "migration_results.txt"):
         os.remove(base_path + "migration_results.txt")
@@ -230,7 +238,7 @@ def test_all_static_graphs(size, output_file_name = ""):
         graph_string = f"./res/static_test_graphs/{graph_name}"
         
         # Argumente für die Experimente
-        args = ["./res/sharedMapConfigs/config_experiment1.json", graph_string, "1"]
+        args = ["./res/sharedMapConfigs/config_experiment1.json", graph_string]
         
         
         # Führe 5 Runs für jeden Algorithmus aus
@@ -238,7 +246,6 @@ def test_all_static_graphs(size, output_file_name = ""):
         for iteration in range(1):
             
             if iteration == 1:
-                args[3] = "0"
                 args[0] = "./res/sharedMapConfigs/config_experiment2.json"
             elif iteration == 2:
                 args[0] = "./res/sharedMapConfigs/config_experiment3.json"
@@ -339,13 +346,12 @@ def test_all_graphs(size , output_file_name = ""):
         graph_string = f"./res/final_real_dyn/{graph_name}"
         
         # Argumente für die Experimente
-        args = ["./res/sharedMapConfigs/config_experiment1.json", graph_string, "1" ]
+        args = ["./res/sharedMapConfigs/config_experiment1.json", graph_string ]
         
         # Führe 5 Runs für jeden Algorithmus aus
         for iteration in range(1):
             
             if iteration == 1:
-                args[3] = "0"
                 args[0] = "./res/sharedMapConfigs/config_experiment2.json"
             elif iteration == 2:
                 args[0] = "./res/sharedMapConfigs/config_experiment3.json"
@@ -401,4 +407,9 @@ def test_all_graphs(size , output_file_name = ""):
     print(f"Results saved to {output_file}")
 
 
-test_all_static_graphs("m", "testrun.json")
+args = ["./res/sharedMapConfigs/config_experiment1.json", "./res/final_real_dyn/topology.seq" ]
+run_single_experiment_RFS(args)
+costs = determine_comm_cost()
+print(costs)
+clean_up()
+#test_all_static_graphs("m", "testrun.json")
